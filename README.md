@@ -152,7 +152,7 @@ mirajay-cli/
 - [快速入门](./docs/00-快速入门.md)
 - [GitHub / npm / Pages 发布说明](./docs/publishing.md)
 
-发布文档站与 npm 的完整步骤见 `docs/publishing.md`。把文中的 `YOUR_GITHUB_USERNAME` 换成你的账号。
+发布文档站与 npm 的完整步骤见 `docs/publishing.md`。
 
 ## License
 
