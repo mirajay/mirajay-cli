@@ -2,7 +2,7 @@
 
 企业级前端脚手架工具，覆盖桌面 Web、移动端与微前端全场景。
 
-基于 unjs 生态（citty、consola、picocolors、giget）构建，集成 Turborepo、tsup、markdownlint 等工程化工具。
+基于 unjs 生态（citty、consola、picocolors、giget）构建，集成 Turborepo、Tsup、ESLint、Prettier、Stylelint、Vitest、Markdownlint 等工程化工具。
 
 ## 特性
 
