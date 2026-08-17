@@ -1,0 +1,39 @@
+<template>
+  <view class="page">
+    <uni-card title="<%= projectName %>" extra="uni-app + uni-ui">
+      <text class="desc">Vue 3 跨端项目</text>
+      <uni-list :border="false">
+        <uni-list-item title="框架" note="uni-app + uni-ui" />
+        <uni-list-item title="计数" :right-text="String(count)" />
+      </uni-list>
+      <button class="action-btn" type="primary" @click="increment">点击 +1</button>
+    </uni-card>
+  </view>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+
+const count = ref(0)
+
+function increment() {
+  count.value += 1
+}
+</script>
+
+<style scoped>
+.page {
+  padding: 24rpx;
+}
+
+.desc {
+  display: block;
+  color: #666;
+  margin-bottom: 16rpx;
+  font-size: 28rpx;
+}
+
+.action-btn {
+  margin-top: 24rpx;
+}
+</style>

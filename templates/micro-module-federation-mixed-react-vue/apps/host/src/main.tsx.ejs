@@ -1,0 +1,19 @@
+import { StrictMode, Suspense } from 'react'
+import { createRoot } from 'react-dom/client'
+import { RemoteVueHeader } from './RemoteVueHeader'
+
+export function App() {
+  return (
+    <StrictMode>
+      <div style={{ padding: '2rem' }}>
+        <h1><%= projectName %> - Module Federation 混合栈</h1>
+        <p>React 主应用加载 Vue 远程组件（演示跨技术栈联邦模块）</p>
+        <Suspense fallback={<div>Loading remote Vue module...</div>}>
+          <RemoteVueHeader />
+        </Suspense>
+      </div>
+    </StrictMode>
+  )
+}
+
+createRoot(document.getElementById('root')!).render(<App />)

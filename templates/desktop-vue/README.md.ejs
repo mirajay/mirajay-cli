@@ -1,0 +1,20 @@
+# <%= projectName %><% if (useMonorepo) { %> / apps/web<% } %>
+
+Vue 3 桌面 Web 应用，由 [mirajay-cli](https://github.com) 脚手架生成。
+
+## 技术栈
+
+- Vue 3 + <%= useTypeScript ? 'TypeScript' : 'JavaScript' %>
+- Vite 6
+- <%= uiLibrary %>
+<% if (cssFramework !== 'none') { -%>
+- <%= cssFramework %>
+<% } -%>
+- Pinia + Vue Router
+<% if (useMonorepo) { -%>
+- Turborepo Monorepo（根目录见 [../README.md](../README.md)）
+<% } -%>
+
+<%= readmeStructureSection %>
+
+<%= readmeCommandsSection %>

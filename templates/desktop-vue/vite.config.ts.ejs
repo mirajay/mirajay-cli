@@ -1,0 +1,27 @@
+import { defineConfig } from 'vite'
+import vue from '@vitejs/plugin-vue'
+<% if (cssFramework === 'tailwindcss') { -%>
+import tailwindcss from '@tailwindcss/vite'
+
+export default defineConfig({
+  plugins: [vue(), tailwindcss()],
+<% } else if (cssFramework === 'unocss') { -%>
+import UnoCSS from 'unocss/vite'
+
+export default defineConfig({
+  plugins: [vue(), UnoCSS()],
+<% } else { -%>
+
+export default defineConfig({
+  plugins: [vue()],
+<% } -%>
+  server: {
+    port: 5173,
+    host: true,
+    open: true,
+  },
+  build: {
+    target: 'esnext',
+    sourcemap: true,
+  },
+})

@@ -1,0 +1,23 @@
+# <%= projectName %>
+
+Turborepo Monorepo 工作区，由 mirajay-cli 脚手架生成。
+
+<%= readmeStructureSection %>
+
+<%= readmeCommandsSection %>
+
+## 子包说明
+
+| 路径 | 说明 |
+| --- | --- |
+| `apps/web` | 主 Web 应用，详见 [apps/web/README.md](./apps/web/README.md) |
+| `packages/shared` | 共享工具、类型、组件库 |
+
+## 常用 Turborepo 命令
+
+```bash
+pnpm dev          # 启动所有子包的 dev 任务
+pnpm build        # 构建所有子包
+pnpm lint         # 运行所有子包的 lint
+pnpm test         # 运行所有子包的测试
+```

@@ -1,0 +1,19 @@
+# <%= projectName %><% if (useMonorepo) { %> / apps/web<% } %>
+
+uni-app 跨端项目，支持 Vue 3 编译至微信小程序、H5 等。
+
+<%= readmeStructureSection %>
+
+<%= readmeCommandsSection %>
+
+## 条件编译
+
+```vue
+<!-- #ifdef H5 -->
+<view>H5 端内容</view>
+<!-- #endif -->
+
+<!-- #ifdef MP-WEIXIN -->
+<view>微信小程序内容</view>
+<!-- #endif -->
+```

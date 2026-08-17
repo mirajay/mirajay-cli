@@ -1,0 +1,89 @@
+import { useState } from 'react'
+<% if (uiLibrary === 'antd') { -%>
+import { Button, Card } from 'antd'
+<% } else if (uiLibrary === '@mantine/core') { -%>
+import { Button, Card, Text } from '@mantine/core'
+<% } else if (uiLibrary === '@mui/material') { -%>
+import { Button, Card, CardContent, Typography } from '@mui/material'
+<% } else if (uiLibrary === '@nextui-org/react') { -%>
+import { Button, Card, CardBody, CardHeader } from '@nextui-org/react'
+<% } else if (uiLibrary === '@chakra-ui/react') { -%>
+import { Box, Button, Heading, Text } from '@chakra-ui/react'
+<% } else if (uiLibrary === 'shadcn-ui') { -%>
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+<% } -%>
+
+function App() {
+  const [count, setCount] = useState(0)
+
+  return (
+    <div className="app-container">
+      <header className="app-header">
+        <h1><%= projectName %></h1>
+        <p>React 19 + Vite + <%= uiLibrary %></p>
+      </header>
+
+      <main className="app-main">
+<% if (uiLibrary === 'antd') { -%>
+        <Card title="欢迎使用企业级前端脚手架" style={{ width: 400 }}>
+          <p>计数: {count}</p>
+          <Button type="primary" onClick={() => setCount(c => c + 1)}>
+            点击 +1
+          </Button>
+        </Card>
+<% } else if (uiLibrary === '@mantine/core') { -%>
+        <Card shadow="sm" padding="lg" radius="md" withBorder w={400}>
+          <Text fw={500} size="lg" mb="md">欢迎使用企业级前端脚手架</Text>
+          <Text mb="md">计数: {count}</Text>
+          <Button onClick={() => setCount(c => c + 1)}>点击 +1</Button>
+        </Card>
+<% } else if (uiLibrary === '@mui/material') { -%>
+        <Card sx={{ width: 400 }}>
+          <CardContent>
+            <Typography variant="h6" gutterBottom>欢迎使用企业级前端脚手架</Typography>
+            <Typography mb={2}>计数: {count}</Typography>
+            <Button variant="contained" onClick={() => setCount(c => c + 1)}>
+              点击 +1
+            </Button>
+          </CardContent>
+        </Card>
+<% } else if (uiLibrary === '@nextui-org/react') { -%>
+        <Card className="w-[400px]">
+          <CardHeader>欢迎使用企业级前端脚手架</CardHeader>
+          <CardBody>
+            <p>计数: {count}</p>
+            <Button color="primary" onPress={() => setCount(c => c + 1)}>
+              点击 +1
+            </Button>
+          </CardBody>
+        </Card>
+<% } else if (uiLibrary === '@chakra-ui/react') { -%>
+        <Box width="400px" padding="6" borderWidth="1px" borderRadius="md">
+          <Heading size="md" mb="3">欢迎使用企业级前端脚手架</Heading>
+          <Text mb="3">计数: {count}</Text>
+          <Button onClick={() => setCount(c => c + 1)}>点击 +1</Button>
+        </Box>
+<% } else if (uiLibrary === 'shadcn-ui') { -%>
+        <Card className="w-[400px]">
+          <CardHeader>
+            <CardTitle>欢迎使用企业级前端脚手架</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground mb-4">计数: {count}</p>
+            <Button onClick={() => setCount(c => c + 1)}>点击 +1</Button>
+          </CardContent>
+        </Card>
+<% } else { -%>
+        <div className="card">
+          <h2>欢迎使用企业级前端脚手架</h2>
+          <p>计数: {count}</p>
+          <button onClick={() => setCount(c => c + 1)}>点击 +1</button>
+        </div>
+<% } -%>
+      </main>
+    </div>
+  )
+}
+
+export default App

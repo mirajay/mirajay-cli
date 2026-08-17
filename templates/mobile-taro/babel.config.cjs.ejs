@@ -1,0 +1,12 @@
+module.exports = {
+  presets: [
+    [
+      'taro',
+      {
+        framework: '<%= framework === "react" ? "react" : "vue3" %>',
+        ts: true,
+        compiler: 'vite',
+      },
+    ],
+  ],
+}

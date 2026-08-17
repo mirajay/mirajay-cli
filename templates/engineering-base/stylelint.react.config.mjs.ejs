@@ -1,0 +1,28 @@
+/** @type {import('stylelint').Config} */
+export default {
+  extends: ['stylelint-config-standard'],
+  ignoreFiles: ['dist/**', 'coverage/**', 'node_modules/**'],
+  rules: {
+    // Tailwind CSS v4
+    'import-notation': 'string',
+    'at-rule-no-unknown': [
+      true,
+      {
+        ignoreAtRules: [
+          'apply',
+          'config',
+          'custom-variant',
+          'layer',
+          'source',
+          'tailwind',
+          'theme',
+          'utility',
+          'variant',
+        ],
+      },
+    ],
+    'alpha-value-notation': null,
+    'hue-degree-notation': null,
+    'lightness-notation': null,
+  },
+}

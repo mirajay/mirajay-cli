@@ -1,0 +1,67 @@
+{
+  "name": "<%= useMonorepo ? 'web' : projectName %>",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+<% if (useTypeScript) { -%>
+    "build": "tsc -b && vite build",
+<% } else { -%>
+    "build": "vite build",
+<% } -%>
+    "preview": "vite preview"
+<% if (uiLibrary === 'shadcn-ui') { -%>
+    ,"ui:add": "npx shadcn@latest add"
+<% } -%>
+  },
+  "dependencies": {
+<% if (useMonorepo) { -%>
+    "<%= sharedPackageName %>": "workspace:*",
+<% } -%>
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-router-dom": "^7.2.0"
+<% if (uiLibrary === 'antd') { -%>
+    ,"antd": "^5.24.2"
+<% } else if (uiLibrary === '@mui/material') { -%>
+    ,"@mui/material": "^6.4.6",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0"
+<% } else if (uiLibrary === '@mantine/core') { -%>
+    ,"@mantine/core": "^7.17.0",
+    "@mantine/hooks": "^7.17.0"
+<% } else if (uiLibrary === '@chakra-ui/react') { -%>
+    ,"@chakra-ui/react": "^3.8.0",
+    "@emotion/react": "^11.14.0"
+<% } else if (uiLibrary === '@nextui-org/react') { -%>
+    ,"@nextui-org/react": "^2.6.11",
+    "framer-motion": "^12.4.7"
+<% } else if (uiLibrary === 'shadcn-ui') { -%>
+    ,"class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.0.2",
+    "@radix-ui/react-slot": "^1.1.2",
+    "lucide-react": "^0.475.0"
+<% } -%>
+  },
+  "devDependencies": {
+<% if (useTypeScript) { -%>
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+<% } -%>
+    "@vitejs/plugin-react": "^4.3.4",
+<% if (useTypeScript || uiLibrary === 'shadcn-ui') { -%>
+    "typescript": "~5.7.3",
+<% } -%>
+    "vite": "^6.2.0"
+<% if (cssFramework === 'tailwindcss') { -%>
+    ,"tailwindcss": "^4.0.9",
+    "@tailwindcss/vite": "^4.0.9"<% if (uiLibrary === 'shadcn-ui') { -%>,
+    "tw-animate-css": "^1.2.5"<% } -%>
+<% } else if (cssFramework === 'unocss') { -%>
+    ,"unocss": "^66.0.0",
+    "@unocss/reset": "^66.0.0"
+<% } -%>
+  }
+}

@@ -1,0 +1,9 @@
+/** 跨应用共享工具函数，可在 apps/web 中通过 workspace 引用 */
+export function formatDate(date: Date): string {
+  return date.toISOString().slice(0, 10)
+}
+
+export function capitalize(text: string): string {
+  if (!text) return text
+  return text.charAt(0).toUpperCase() + text.slice(1)
+}

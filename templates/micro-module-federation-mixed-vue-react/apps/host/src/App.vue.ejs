@@ -1,0 +1,17 @@
+<script setup lang="ts">
+import RemoteReactHeader from './RemoteReactHeader.vue'
+</script>
+
+<template>
+  <div class="host">
+    <h1><%= projectName %> - Module Federation 混合栈</h1>
+    <p>Vue 主应用加载 React 远程组件（演示跨技术栈联邦模块）</p>
+    <RemoteReactHeader />
+  </div>
+</template>
+
+<style scoped>
+.host {
+  padding: 2rem;
+}
+</style>

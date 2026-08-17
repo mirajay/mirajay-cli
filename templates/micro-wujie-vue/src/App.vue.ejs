@@ -1,0 +1,23 @@
+<template>
+  <div class="host">
+    <h1><%= projectName %> - 无界微前端 (Vue 主应用)</h1>
+    <p>请先启动示例子应用 dev 服务（默认 http://localhost:5174，建议同栈 Vue 项目）</p>
+    <div class="subapp-frame">
+      <WujieVue name="sub-app-vue" url="http://localhost:5174" :sync="true" width="100%" height="100%" />
+    </div>
+  </div>
+</template>
+
+<style scoped>
+.host {
+  padding: 2rem;
+}
+
+.subapp-frame {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-top: 1rem;
+  width: 100%;
+  height: 400px;
+}
+</style>

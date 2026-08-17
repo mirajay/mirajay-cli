@@ -1,0 +1,74 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+.turbo/
+*.tsbuildinfo
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Test & coverage
+coverage/
+
+# IDE
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Vite
+*.local
+
+<% if (projectType === 'mobile') { -%>
+<% if (typeof mobilePlatform !== 'undefined' && mobilePlatform === 'taro') { -%>
+# Taro
+.temp/
+.rn_temp/
+deploy_versions/
+.swc/
+
+<% } -%>
+<% if (typeof mobilePlatform !== 'undefined' && mobilePlatform === 'uni-app') { -%>
+# uni-app
+unpackage/
+
+<% } -%>
+<% if (typeof mobilePlatform !== 'undefined' && mobilePlatform === 'react-native') { -%>
+# Expo / React Native
+.expo/
+.expo-shared/
+
+<% } -%>
+<% } -%>
+<% if (typeof mobilePlatform !== 'undefined' && mobilePlatform === 'flutter') { -%>
+# Flutter
+.dart_tool/
+.packages
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+
+<% } -%>
+<% if (useMonorepo) { -%>
+# Monorepo
+.pnpm-store/
+
+<% } -%>

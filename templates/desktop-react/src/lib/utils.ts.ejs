@@ -1,0 +1,6 @@
+import { clsx<% if (useTypeScript) { %>, type ClassValue<% } %> } from 'clsx'
+import { twMerge } from 'tailwind-merge'
+
+export function cn(<% if (useTypeScript) { %>...inputs: ClassValue[]<% } else { %>...inputs<% } %>) {
+  return twMerge(clsx(inputs))
+}

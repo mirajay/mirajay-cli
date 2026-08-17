@@ -1,0 +1,28 @@
+import { registerMicroApps, start } from 'qiankun'
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+
+registerMicroApps([
+  {
+    name: 'sub-app-react',
+    entry: '//localhost:5174',
+    container: '#subapp-container',
+    activeRule: '/sub-app',
+  },
+])
+
+start({ sandbox: { strictStyleIsolation: true } })
+
+export function App() {
+  return (
+    <StrictMode>
+      <div style={{ padding: '2rem' }}>
+        <h1><%= projectName %> - qiankun (React 主应用)</h1>
+        <p style={{ color: '#999' }}>⚠ qiankun 为遗留方案，新项目建议使用 Module Federation 或 wujie</p>
+        <div id="subapp-container" style={{ marginTop: '1rem', minHeight: '400px', border: '1px solid #ddd', borderRadius: '8px' }} />
+      </div>
+    </StrictMode>
+  )
+}
+
+createRoot(document.getElementById('root')<%= useTypeScript ? '!' : '' %>).render(<App />)

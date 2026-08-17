@@ -1,0 +1,26 @@
+<template>
+  <div class="host">
+    <h1><%= projectName %> - micro-app (Vue 主应用)</h1>
+    <p>使用 &lt;micro-app&gt; 标签嵌入子应用</p>
+    <micro-app
+      name="sub-app"
+      url="http://localhost:5174"
+      baseroute="/sub-app"
+      class="subapp-frame"
+    />
+  </div>
+</template>
+
+<style scoped>
+.host {
+  padding: 2rem;
+}
+
+.subapp-frame {
+  display: block;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-top: 1rem;
+  min-height: 400px;
+}
+</style>

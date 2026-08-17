@@ -1,0 +1,24 @@
+/** @type {import('lint-staged').Config} */
+export default {
+<% const codeGlob = useMonorepo ? 'apps/**/*.{ts,tsx,vue,js,jsx}' : '*.{ts,tsx,vue,js,jsx}' -%>
+<% const styleGlob = useMonorepo
+  ? (framework === 'vue' ? 'apps/**/*.{css,scss,vue}' : 'apps/**/*.{css,scss}')
+  : (framework === 'vue' ? '*.{css,scss,vue}' : '*.{css,scss}') -%>
+<% const formatGlob = useMonorepo
+  ? 'apps/**/*.{ts,tsx,vue,js,jsx,json,md,css,scss}'
+  : '*.{ts,tsx,vue,js,jsx,json,md,css,scss}' -%>
+<% const eslintConfig = useMonorepo ? ' --config apps/web/eslint.config.js' : '' -%>
+<% const stylelintConfig = useMonorepo ? ' --config apps/web/stylelint.config.mjs' : '' -%>
+<% if (engineering.eslint) { -%>
+  '<%= codeGlob %>': ['eslint --fix<%= eslintConfig %>'],
+<% } -%>
+<% if (engineering.stylelint) { -%>
+  '<%= styleGlob %>': ['stylelint --fix<%= stylelintConfig %>'],
+<% } -%>
+<% if (engineering.prettier) { -%>
+  '<%= formatGlob %>': ['prettier --write'],
+<% } -%>
+<% if (engineering.spellcheck) { -%>
+  '<%= useMonorepo ? '**/*.{ts,tsx,vue,js,jsx,md,json}' : '**/*.{ts,tsx,vue,js,jsx,md,json}' %>': ['cspell --no-must-find-files'],
+<% } -%>
+}

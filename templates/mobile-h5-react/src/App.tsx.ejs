@@ -1,0 +1,23 @@
+import { useState } from 'react'
+import { NavBar, List, Button } from 'antd-mobile'
+
+function App() {
+  const [count, setCount] = useState(0)
+
+  return (
+    <>
+      <NavBar><%= projectName %></NavBar>
+      <List header="H5 移动端">
+        <List.Item extra="React 19 + antd-mobile">框架</List.Item>
+        <List.Item extra={String(count)}>计数</List.Item>
+      </List>
+      <div style={{ padding: '16px' }}>
+        <Button block color="primary" onClick={() => setCount(c => c + 1)}>
+          点击 +1
+        </Button>
+      </div>
+    </>
+  )
+}
+
+export default App

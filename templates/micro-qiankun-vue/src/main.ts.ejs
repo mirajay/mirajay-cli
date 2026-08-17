@@ -1,0 +1,16 @@
+import { registerMicroApps, start } from 'qiankun'
+import { createApp } from 'vue'
+import App from './App.vue'
+
+registerMicroApps([
+  {
+    name: 'sub-app-vue',
+    entry: '//localhost:5174',
+    container: '#subapp-container',
+    activeRule: '/sub-app',
+  },
+])
+
+start({ sandbox: { strictStyleIsolation: true } })
+
+createApp(App).mount('#app')

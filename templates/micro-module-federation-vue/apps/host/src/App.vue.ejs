@@ -1,0 +1,25 @@
+<script setup lang="ts">
+import { defineAsyncComponent } from 'vue'
+
+const RemoteHeader = defineAsyncComponent(() => import('remoteApp/Header'))
+</script>
+
+<template>
+  <div class="host">
+    <h1><%= projectName %> - Module Federation Host (Vue)</h1>
+    <Suspense>
+      <template #default>
+        <RemoteHeader />
+      </template>
+      <template #fallback>
+        <div>Loading remote module...</div>
+      </template>
+    </Suspense>
+  </div>
+</template>
+
+<style scoped>
+.host {
+  padding: 2rem;
+}
+</style>

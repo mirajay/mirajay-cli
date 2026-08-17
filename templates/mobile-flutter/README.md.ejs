@@ -1,0 +1,22 @@
+# <%= projectName %>
+
+Flutter 跨端应用，由 mirajay-cli 脚手架生成。
+
+## 配置
+
+- 状态管理: <%= flutterStateManagement %>
+- Material 3: <%= flutterMaterial3 ? '是' : '否' %>
+- 国际化: <%= flutterInternationalization ? '是' : '否' %>
+- 目标平台: <%= flutterTargetPlatforms?.join(', ') || 'iOS, Android' %>
+
+<%= readmeStructureSection %>
+
+<%= readmeCommandsSection %>
+
+## 构建
+
+```bash
+flutter build apk    # Android
+flutter build ios    # iOS
+flutter build web    # Web
+```

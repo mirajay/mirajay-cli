@@ -1,0 +1,28 @@
+import microApp from '@micro-zoe/micro-app'
+
+microApp.start()
+
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+
+export function App() {
+  return (
+    <StrictMode>
+      <div style={{ padding: '2rem' }}>
+        <h1><%= projectName %> - micro-app (React 主应用)</h1>
+        <p>使用 &lt;micro-app&gt; 标签嵌入子应用</p>
+        <% if (useTypeScript) { -%>
+        {/* @ts-expect-error micro-app custom element */}
+        <% } -%>
+        <micro-app
+          name="sub-app"
+          url="http://localhost:5174"
+          baseroute="/sub-app"
+          style={{ display: 'block', border: '1px solid #ddd', borderRadius: '8px', marginTop: '1rem' }}
+        />
+      </div>
+    </StrictMode>
+  )
+}
+
+createRoot(document.getElementById('root')<%= useTypeScript ? '!' : '' %>).render(<App />)

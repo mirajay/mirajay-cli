@@ -1,0 +1,19 @@
+# <%= projectName %>
+
+qiankun 微前端 — **Vue 主应用**模板（遗留方案）。
+
+## 说明
+
+- 本仓库只生成 **Vue 主应用**，不包含 `react` 依赖
+- `registerMicroApps` 中的 `sub-app-vue` 是示例子应用标识，需在 `http://localhost:5174` 独立启动（子应用可另用脚手架生成 Vue 项目）
+- qiankun 为遗留方案，新项目建议 Module Federation 或 wujie
+
+## 开发
+
+```bash
+pnpm dev
+```
+
+## 注册子应用
+
+编辑 `src/main.ts` 中的 `entry` / `activeRule`，指向实际子应用地址。

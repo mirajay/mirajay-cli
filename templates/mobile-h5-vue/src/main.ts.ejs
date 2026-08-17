@@ -1,0 +1,20 @@
+import 'amfe-flexible'
+import { createApp } from 'vue'
+<% if (uiLibrary === '@nutui/nutui') { -%>
+import NutUI from '@nutui/nutui'
+import '@nutui/nutui/dist/style.css'
+<% } else { -%>
+import { Button, NavBar, Cell, CellGroup } from 'vant'
+import 'vant/lib/index.css'
+<% } -%>
+import App from './App.vue'
+import router from './router'
+
+const app = createApp(App)
+app.use(router)
+<% if (uiLibrary === '@nutui/nutui') { -%>
+app.use(NutUI)
+<% } else { -%>
+app.use(Button).use(NavBar).use(Cell).use(CellGroup)
+<% } -%>
+app.mount('#app')

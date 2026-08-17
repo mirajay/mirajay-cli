@@ -1,0 +1,91 @@
+<script setup<% if (useTypeScript) { %> lang="ts"<% } %>>
+import { ref } from 'vue'
+<% if (uiLibrary === 'element-plus') { -%>
+import { ElButton, ElCard } from 'element-plus'
+<% } else if (uiLibrary === 'ant-design-vue') { -%>
+import { Button, Card } from 'ant-design-vue'
+<% } else if (uiLibrary === 'naive-ui') { -%>
+import { NButton, NCard } from 'naive-ui'
+<% } else if (uiLibrary === 'vuetify') { -%>
+// Vuetify components are registered globally via createVuetify
+<% } else if (uiLibrary === 'primevue') { -%>
+import Button from 'primevue/button'
+import Card from 'primevue/card'
+<% } -%>
+
+const count = ref(0)
+</script>
+
+<template>
+  <div class="app-container">
+    <header class="app-header">
+      <h1><%= projectName %></h1>
+      <p>Vue 3 + Vite + <%= uiLibrary %><% if (cssFramework !== 'none') { %> + <%= cssFramework %><% } %></p>
+    </header>
+
+    <main class="app-main">
+<% if (uiLibrary === 'element-plus') { -%>
+      <ElCard shadow="hover">
+        <template #header>欢迎使用企业级前端脚手架</template>
+        <p>计数: {{ count }}</p>
+        <ElButton type="primary" @click="count++">点击 +1</ElButton>
+      </ElCard>
+<% } else if (uiLibrary === 'ant-design-vue') { -%>
+      <Card title="欢迎使用企业级前端脚手架">
+        <p>计数: {{ count }}</p>
+        <Button type="primary" @click="count++">点击 +1</Button>
+      </Card>
+<% } else if (uiLibrary === 'naive-ui') { -%>
+      <NCard title="欢迎使用企业级前端脚手架">
+        <p>计数: {{ count }}</p>
+        <NButton type="primary" @click="count++">点击 +1</NButton>
+      </NCard>
+<% } else if (uiLibrary === 'vuetify') { -%>
+      <v-card width="400">
+        <v-card-title>欢迎使用企业级前端脚手架</v-card-title>
+        <v-card-text>
+          <p style="margin-bottom: 1rem">计数: {{ count }}</p>
+          <v-btn color="primary" @click="count++">点击 +1</v-btn>
+        </v-card-text>
+      </v-card>
+<% } else if (uiLibrary === 'primevue') { -%>
+      <Card style="width: 400px">
+        <template #title>欢迎使用企业级前端脚手架</template>
+        <template #content>
+          <p style="margin-bottom: 1rem">计数: {{ count }}</p>
+          <Button label="点击 +1" @click="count++" />
+        </template>
+      </Card>
+<% } else { -%>
+      <div class="card">
+        <h2>欢迎使用企业级前端脚手架</h2>
+        <p>计数: {{ count }}</p>
+        <button @click="count++">点击 +1</button>
+      </div>
+<% } -%>
+    </main>
+  </div>
+</template>
+
+<style scoped>
+.app-container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.app-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.app-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.app-main {
+  display: flex;
+  justify-content: center;
+}
+</style>

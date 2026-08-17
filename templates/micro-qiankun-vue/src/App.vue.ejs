@@ -1,0 +1,24 @@
+<template>
+  <div class="host">
+    <h1><%= projectName %> - qiankun (Vue 主应用)</h1>
+    <p class="hint">⚠ qiankun 为遗留方案，新项目建议使用 Module Federation 或 wujie</p>
+    <div id="subapp-container" class="subapp-container" />
+  </div>
+</template>
+
+<style scoped>
+.host {
+  padding: 2rem;
+}
+
+.hint {
+  color: #999;
+}
+
+.subapp-container {
+  margin-top: 1rem;
+  min-height: 400px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+</style>

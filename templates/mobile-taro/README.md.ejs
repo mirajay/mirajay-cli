@@ -1,0 +1,19 @@
+# <%= projectName %><% if (useMonorepo) { %> / apps/web<% } %>
+
+Taro 跨端框架项目<% if (framework === 'vue' && uiLibrary === '@nutui/nutui') { %>，集成 NutUI<% } %>，支持编译至微信小程序、H5 等。
+
+<%= readmeStructureSection %>
+
+<%= readmeCommandsSection %>
+
+## 条件编译
+
+```jsx
+// #ifdef H5
+console.log('H5 端')
+// #endif
+
+// #ifdef MP-WEIXIN
+console.log('微信小程序')
+// #endif
+```

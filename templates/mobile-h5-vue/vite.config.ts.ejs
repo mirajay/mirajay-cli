@@ -1,0 +1,30 @@
+import { defineConfig } from 'vite'
+import vue from '@vitejs/plugin-vue'
+import postcssPxToRem from 'postcss-pxtorem'
+<% if (cssFramework === 'tailwindcss') { -%>
+import tailwindcss from '@tailwindcss/vite'
+<% } -%>
+
+export default defineConfig({
+  plugins: [vue()<% if (cssFramework === 'tailwindcss') { %>, tailwindcss()<% } %>],
+  server: { port: 5173, host: true, open: true },
+  css: {
+    postcss: {
+      plugins: [
+        postcssPxToRem({
+          rootValue: 37.5,
+          propList: ['*'],
+          selectorBlackList: ['.norem'],
+        }),
+        {
+          postcssPlugin: 'internal:charset-removal',
+          AtRule: {
+            charset: (atRule) => {
+              if (atRule.name === 'charset') atRule.remove()
+            },
+          },
+        },
+      ],
+    },
+  },
+})

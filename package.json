@@ -1,0 +1,70 @@
+{
+  "name": "mirajay-cli",
+  "version": "1.0.0",
+  "description": "企业级前端脚手架 - 覆盖桌面 Web、移动端与微前端全场景",
+  "type": "module",
+  "bin": {
+    "mirajay-cli": "./bin/cli.mjs"
+  },
+  "files": [
+    "bin",
+    "dist",
+    "templates"
+  ],
+  "scripts": {
+    "dev": "tsup --watch",
+    "build": "tsup",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint src --ext .ts",
+    "typecheck": "tsc --noEmit",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs",
+    "prepublishOnly": "pnpm build"
+  },
+  "engines": {
+    "node": ">=24.18.0"
+  },
+  "keywords": [
+    "cli",
+    "scaffold",
+    "frontend",
+    "vite",
+    "react",
+    "vue",
+    "micro-frontend"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mirajay/mirajay-cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mirajay/mirajay-cli/issues"
+  },
+  "homepage": "https://mirajay.github.io/mirajay-cli/",
+  "packageManager": "pnpm@9.15.0",
+  "dependencies": {
+    "@inquirer/prompts": "^7.3.2",
+    "c12": "^3.0.4",
+    "citty": "^0.1.6",
+    "consola": "^3.4.0",
+    "ejs": "^3.1.10",
+    "execa": "^9.5.2",
+    "giget": "^2.0.0",
+    "hookable": "^5.5.3",
+    "picocolors": "^1.1.1",
+    "semver": "^7.7.1"
+  },
+  "devDependencies": {
+    "@types/ejs": "^3.1.5",
+    "@types/node": "^22.13.10",
+    "@types/semver": "^7.5.8",
+    "tsup": "^8.4.0",
+    "typescript": "^5.7.3",
+    "vitepress": "^1.6.3",
+    "vitest": "^3.0.8"
+  }
+}

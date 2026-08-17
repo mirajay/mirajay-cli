@@ -1,0 +1,11 @@
+dist
+coverage
+node_modules
+.turbo
+**/.turbo/**
+*.tsbuildinfo
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+tsconfig.json
+tsconfig.*.json

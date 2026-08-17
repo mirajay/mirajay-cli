@@ -1,0 +1,10 @@
+{
+  "name": "<%= sharedPackageName %>",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.<%= useTypeScript ? 'ts' : 'js' %>"
+  },
+  "main": "./src/index.<%= useTypeScript ? 'ts' : 'js' %>"
+}

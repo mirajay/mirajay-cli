@@ -1,0 +1,6 @@
+{
+  "version": "0.2",
+  "language": "en,en-US",
+  "words": ["<%= projectName %>", "mirajay", "mirajay-cli", "vite", "vitest", "eslint", "stylelint", "markdownlint"<% if (projectType === 'mobile' && mobilePlatform === 'h5') { -%>, "amfe", "pxtorem", "norem"<% } -%><% if (projectType === 'mobile' && mobilePlatform === 'taro') { -%>, "tarojs", "weapp", "swan", "alipay", "pxtransform", "chunkhash", "miniprogram", "projectname", "touristappid", "ifdef", "endif", "WEIXIN", "MP-WEIXIN", "styl", "jdrn", "easycom", "subpackage", "harmony"<% } -%><% if (projectType === 'mobile' && mobilePlatform === 'uni-app') { -%>, "dcloudio", "uniapp", "unpackage", "easycom", "mp-weixin", "mp-alipay", "mp-toutiao", "mp-baidu", "mp-qq", "mp-jd", "mp-kuaishou", "mp-lark"<% } -%><% if (projectType === 'mobile' && mobilePlatform === 'react-native') { -%>, "expo", "expo-router"<% } -%><% if (uiLibrary === '@nutui/nutui') { -%>, "nutui"<% } -%><% if (uiLibrary === 'vant') { -%>, "vant"<% } -%>],
+  "ignorePaths": ["dist", "node_modules", "coverage", "pnpm-lock.yaml", ".turbo"]
+}

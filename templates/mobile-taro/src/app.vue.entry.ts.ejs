@@ -1,0 +1,14 @@
+import { createApp } from 'vue'
+import App from './app.vue'
+import './app.scss'
+<% if (uiLibrary === '@nutui/nutui') { -%>
+import { Button, Cell, CellGroup } from '@nutui/nutui-taro'
+import '@nutui/nutui-taro/dist/style.css'
+<% } -%>
+
+const app = createApp(App)
+<% if (uiLibrary === '@nutui/nutui') { -%>
+app.use(Button).use(Cell).use(CellGroup)
+<% } -%>
+
+export default app

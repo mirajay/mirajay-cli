@@ -1,0 +1,15 @@
+# <%= projectName %><% if (useMonorepo) { %> / apps/web<% } %>
+
+H5 移动端 Vue 应用，由 mirajay-cli 脚手架生成。
+
+## 技术栈
+
+- Vue 3 + <% if (uiLibrary === '@nutui/nutui') { %>NutUI<% } else { %>Vant<% } %>
+- Vite 6 + postcss-pxtorem
+<% if (useMonorepo) { -%>
+- Turborepo Monorepo（根目录见 [../README.md](../README.md)）
+<% } -%>
+
+<%= readmeStructureSection %>
+
+<%= readmeCommandsSection %>

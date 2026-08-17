@@ -1,0 +1,42 @@
+import js from '@eslint/js'
+import globals from 'globals'
+import pluginVue from 'eslint-plugin-vue'
+import tseslint from 'typescript-eslint'
+
+const uniGlobals = {
+  uni: 'readonly',
+  plus: 'readonly',
+  wx: 'readonly',
+  getApp: 'readonly',
+  getCurrentPages: 'readonly',
+}
+
+export default tseslint.config(
+  { ignores: ['dist/**', 'node_modules/**', 'unpackage/**'] },
+  js.configs.recommended,
+  ...tseslint.configs.recommended,
+  ...pluginVue.configs['flat/recommended'],
+  {
+    files: ['**/*.{ts,vue}'],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+        ...uniGlobals,
+      },
+    },
+    rules: {
+      'vue/multi-word-component-names': 'off',
+      'vue/singleline-html-element-content-newline': 'off',
+      'vue/max-attributes-per-line': 'off',
+    },
+  },
+  {
+    files: ['**/*.{cjs,mjs}'],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      globals: globals.node,
+    },
+  },
+)

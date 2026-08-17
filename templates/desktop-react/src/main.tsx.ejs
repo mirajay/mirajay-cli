@@ -1,0 +1,73 @@
+import { StrictMode<% if (useTypeScript) { %>, type ReactNode<% } %> } from 'react'
+import { createRoot } from 'react-dom/client'
+import { BrowserRouter } from 'react-router-dom'
+<% if (uiLibrary === 'antd') { -%>
+import { ConfigProvider } from 'antd'
+import zhCN from 'antd/locale/zh_CN'
+<% } else if (uiLibrary === '@mantine/core') { -%>
+import { MantineProvider } from '@mantine/core'
+<% } else if (uiLibrary === '@mui/material') { -%>
+import { ThemeProvider, createTheme } from '@mui/material/styles'
+import CssBaseline from '@mui/material/CssBaseline'
+<% } else if (uiLibrary === '@nextui-org/react') { -%>
+import { NextUIProvider } from '@nextui-org/react'
+<% } else if (uiLibrary === '@chakra-ui/react') { -%>
+import { ChakraProvider, defaultSystem } from '@chakra-ui/react'
+<% } -%>
+<% if (cssFramework === 'tailwindcss') { -%>
+import './styles/tailwind.css'
+<% } else if (cssFramework === 'unocss') { -%>
+import '@unocss/reset/tailwind.css'
+import 'virtual:uno.css'
+<% } -%>
+import './styles/global.css'
+import App from './App'
+
+<% if (uiLibrary === '@mui/material') { -%>
+const theme = createTheme()
+<% } -%>
+
+function RootProviders({ children }<% if (useTypeScript) { %>: { children: ReactNode }<% } %>) {
+<% if (uiLibrary === 'antd') { -%>
+  return (
+    <ConfigProvider locale={zhCN}>
+      <BrowserRouter>{children}</BrowserRouter>
+    </ConfigProvider>
+  )
+<% } else if (uiLibrary === '@mantine/core') { -%>
+  return (
+    <MantineProvider>
+      <BrowserRouter>{children}</BrowserRouter>
+    </MantineProvider>
+  )
+<% } else if (uiLibrary === '@mui/material') { -%>
+  return (
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <BrowserRouter>{children}</BrowserRouter>
+    </ThemeProvider>
+  )
+<% } else if (uiLibrary === '@nextui-org/react') { -%>
+  return (
+    <NextUIProvider>
+      <BrowserRouter>{children}</BrowserRouter>
+    </NextUIProvider>
+  )
+<% } else if (uiLibrary === '@chakra-ui/react') { -%>
+  return (
+    <ChakraProvider value={defaultSystem}>
+      <BrowserRouter>{children}</BrowserRouter>
+    </ChakraProvider>
+  )
+<% } else { -%>
+  return <BrowserRouter>{children}</BrowserRouter>
+<% } -%>
+}
+
+createRoot(document.getElementById('root')<%= useTypeScript ? '!' : '' %>).render(
+  <StrictMode>
+    <RootProviders>
+      <App />
+    </RootProviders>
+  </StrictMode>,
+)

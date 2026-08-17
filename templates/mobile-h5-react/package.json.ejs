@@ -1,0 +1,35 @@
+{
+  "name": "<%= useMonorepo ? 'web' : projectName %>",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+<% if (useTypeScript) { -%>
+    "build": "tsc -b && vite build",
+<% } else { -%>
+    "build": "vite build",
+<% } -%>
+    "preview": "vite preview"
+  },
+  "dependencies": {
+<% if (useMonorepo) { -%>
+    "<%= sharedPackageName %>": "workspace:*",
+<% } -%>
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "antd-mobile": "^5.38.1",
+    "amfe-flexible": "^2.2.1"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "@vitejs/plugin-react": "^4.3.4",
+<% if (useTypeScript) { -%>
+    "typescript": "~5.7.3",
+<% } -%>
+    "vite": "^6.2.0",
+    "postcss": "^8.5.3",
+    "postcss-pxtorem": "^6.1.0"
+  }
+}

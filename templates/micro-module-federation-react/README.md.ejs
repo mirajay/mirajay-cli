@@ -1,0 +1,24 @@
+# <%= projectName %>
+
+Module Federation 微前端 Monorepo 项目（**React 同栈**）。
+
+## 架构
+
+- `apps/host` - 主应用，加载远程模块
+- `packages/remote-app` - 子应用，暴露 Header 组件
+
+## 开发
+
+```bash
+# 终端 1: 启动 remote
+cd packages/remote-app && pnpm dev
+
+# 终端 2: 启动 host
+cd apps/host && pnpm dev
+```
+
+## 构建
+
+```bash
+pnpm build
+```

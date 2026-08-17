@@ -1,0 +1,26 @@
+# <%= projectName %>
+
+Module Federation **混合栈演示** Monorepo（React 主应用 + Vue 远程模块）。
+
+## 架构
+
+- `apps/host` - React 主应用，通过桥接组件挂载 Vue 远程模块
+- `packages/remote-app` - Vue 子应用，暴露 Header 组件
+
+> 混合栈适合演示与存量系统集成；生产环境同栈 Module Federation 更简单、类型与共享依赖更可控。
+
+## 开发
+
+```bash
+# 终端 1: 启动 remote（Vue）
+cd packages/remote-app && pnpm dev
+
+# 终端 2: 启动 host（React）
+cd apps/host && pnpm dev
+```
+
+## 构建
+
+```bash
+pnpm build
+```

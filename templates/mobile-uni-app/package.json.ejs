@@ -1,0 +1,54 @@
+{
+  "name": "<%= useMonorepo ? 'web' : projectName %>",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "npm run dev:h5",
+    "build": "npm run build:h5",
+    "dev:h5": "uni",
+    "build:h5": "uni build",
+    "dev:mp-weixin": "uni -p mp-weixin",
+    "build:mp-weixin": "uni build -p mp-weixin",
+    "dev:mp-alipay": "uni -p mp-alipay",
+    "build:mp-alipay": "uni build -p mp-alipay",
+    "dev:mp-toutiao": "uni -p mp-toutiao",
+    "build:mp-toutiao": "uni build -p mp-toutiao",
+    "dev:mp-baidu": "uni -p mp-baidu",
+    "build:mp-baidu": "uni build -p mp-baidu",
+    "dev:mp-qq": "uni -p mp-qq",
+    "build:mp-qq": "uni build -p mp-qq",
+    "dev:mp-jd": "uni -p mp-jd",
+    "build:mp-jd": "uni build -p mp-jd",
+    "dev:mp-kuaishou": "uni -p mp-kuaishou",
+    "build:mp-kuaishou": "uni build -p mp-kuaishou",
+    "dev:mp-lark": "uni -p mp-lark",
+    "build:mp-lark": "uni build -p mp-lark"
+  },
+  "dependencies": {
+<% if (useMonorepo) { -%>
+    "<%= sharedPackageName %>": "workspace:*",
+<% } -%>
+    "@dcloudio/uni-app": "3.0.0-5020320260806002",
+    "@dcloudio/uni-components": "3.0.0-5020320260806002",
+    "@dcloudio/uni-h5": "3.0.0-5020320260806002",
+    "@dcloudio/uni-mp-alipay": "3.0.0-5020320260806002",
+    "@dcloudio/uni-mp-baidu": "3.0.0-5020320260806002",
+    "@dcloudio/uni-mp-jd": "3.0.0-5020320260806002",
+    "@dcloudio/uni-mp-kuaishou": "3.0.0-5020320260806002",
+    "@dcloudio/uni-mp-lark": "3.0.0-5020320260806002",
+    "@dcloudio/uni-mp-qq": "3.0.0-5020320260806002",
+    "@dcloudio/uni-mp-toutiao": "3.0.0-5020320260806002",
+    "@dcloudio/uni-mp-weixin": "3.0.0-5020320260806002",
+    "@dcloudio/uni-ui": "^1.5.7",
+    "vue": "^3.5.13"
+  },
+  "devDependencies": {
+    "@dcloudio/types": "^3.4.14",
+    "@dcloudio/uni-automator": "3.0.0-5020320260806002",
+    "@dcloudio/vite-plugin-uni": "3.0.0-5020320260806002",
+    "sass": "^1.86.0",
+    "sass-embedded": "^1.86.0",
+    "typescript": "~5.7.3",
+    "vite": "^6.2.0"
+  }
+}

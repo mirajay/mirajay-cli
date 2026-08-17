@@ -1,0 +1,17 @@
+import { createApp } from 'vue'
+import WujieVue from 'wujie-vue3'
+import App from './App.vue'
+
+const { setupApp, preloadApp } = WujieVue
+
+setupApp({
+  name: 'sub-app-vue',
+  url: 'http://localhost:5174',
+  exec: true,
+  alive: true,
+  fetch: (url<% if (useTypeScript) { %>: string, options?: RequestInit<% } %>) => window.fetch(url, { ...options, mode: 'cors' }),
+})
+
+preloadApp({ name: 'sub-app-vue' })
+
+createApp(App).use(WujieVue).mount('#app')
