@@ -20,7 +20,7 @@ features:
   - title: 全端覆盖
     details: 桌面 Vue/React、H5/Taro/uni-app/RN/Flutter，以及 Module Federation / wujie / micro-app / qiankun。
   - title: 工程化可预设
-    details: Minimal / Standard / Strict，ESLint、Prettier、Vitest、commitlint、husky 由 engineering-base 合并注入。
+    details: Minimal / Standard / Strict；Monorepo 下根共享 Prettier、应用放 ESLint/Vitest，由 engineering-base 按 scope 合并注入。
   - title: 模板可演进
     details: 本地 templates + giget 远程模板；update-deps 同步依赖版本；矩阵测试兜底回归。
 ---
@@ -32,6 +32,7 @@ features:
 | 0 | [小白入门指南](/mirajay-cli-小白入门指南) | 一篇通关：使用 + 架构 + 源码 |
 | 1 | [00 快速入门](/00-快速入门) | 10 分钟跑通第一个项目 |
 | 2 | [01 → 07 分册](/01-项目总览) | 系统理解设计与实现 |
+| — | [版本变更与迭代](/changelog) | 1.x 功能演进 |
 | — | [踩坑与 AI 复盘](/mirajay-cli-开发踩坑与AI编程复盘) | 真实问题与防再发 |
 
 ## 常用命令

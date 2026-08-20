@@ -187,51 +187,274 @@ https://mirajay.github.io/mirajay-cli/
 
 ## 3. 发布到 npm
 
-### 发布前检查
+本包名：`mirajay-cli`。 
+GitHub：https://github.com/mirajay/mirajay-cli  
+安装后命令：`mirajay-cli`
+
+`files` 已限制只发布 `bin` / `dist` / `templates`；`docs/`、`src/`、`tests/` **不会**进包。  
+`prepublishOnly` 会在正式 `publish` 前自动执行 `pnpm build`。
+
+---
+
+### 3.1 注册 / 登录 npm（本机只做一次）
+
+1. 打开 https://www.npmjs.com/signup 注册账号（可用 GitHub 关联）。  
+2. 邮箱验证通过后再继续。  
+3. 本机终端登录（任选一种）：
 
 ```bash
+# 推荐：浏览器登录（新版 npm）
+npm login
+
+# 或
+npm adduser
+```
+
+按提示完成浏览器授权或输入用户名/密码/邮箱。  
+验证是否登录成功：
+
+```bash
+npm whoami
+# 应打印你的 npm 用户名，例如 mirajay
+```
+
+> 未登录时 `npm whoami` 会报 `ENEEDAUTH`，先完成上面步骤。
+
+---
+
+### 3.2 发布前自检（强烈建议）
+
+在项目根目录，建议使用 **Node ≥ 24.18**（与 `engines` 一致）：
+
+```bash
+cd /path/to/mirajay-cli   # 你的本地仓库
+node -v                   # 建议 v24.18+
 pnpm install
-pnpm typecheck   # 若脚本存在
+pnpm typecheck
 pnpm test
 pnpm build
-pnpm pack --dry-run   # 确认只有 bin / dist / templates
+
+# 看最终会打进包的文件（不要出现 docs、src、tests、node_modules）
+npm pack --dry-run
 ```
 
-`package.json` 的 `files` 已限制发布内容；`docs/`、`src/`、`tests/` **不会**进 npm 包。`prepublishOnly` 会在 publish 前自动 `pnpm build`。
+期望列表大致包含：
 
-### 包名
+- `package.json`
+- `bin/cli.mjs`
+- `dist/...`（构建产物）
+- `templates/...`
 
-到 npm 确认 `mirajay-cli` 是否可用。被占用则改名或使用 scope：
+可选：补全 `package.json` 的 `author`（npm 页会显示）：
 
 ```json
-{ "name": "@YOUR_NPM_SCOPE/mirajay-cli", "publishConfig": { "access": "public" } }
+"author": "mirajay"
 ```
 
-### 发布
+确认 `repository` / `homepage` / `bugs` 已指向 GitHub 与文档站（当前已配置好可跳过）。
+
+---
+
+### 3.3 干跑发布（不真正上传）
 
 ```bash
-npm login
 npm publish --dry-run
-npm publish
-# scope 包：
-# npm publish --access public
 ```
 
-版本迭代：
+会模拟打包与发布流程，**不会**真正发到 npm。确认无报错即可。
+
+---
+
+### 3.4 正式发布（第一次）
+
+当前版本是 `1.0.0`。首次发布：
 
 ```bash
-npm version patch   # 或 minor / major
-git push && git push --tags
 npm publish
 ```
 
-###（可选）用 GitHub Actions 发 npm
+成功后：
 
-草稿见 [`.github/workflows/release.yml`](../.github/workflows/release.yml)。需要：
+1. 打开 https://www.npmjs.com/package/mirajay-cli 应能看到包页。  
+2. 另开终端验证安装：
 
-1. npm 建 Access Token（Automation）
-2. 仓库 Secrets 增加 `NPM_TOKEN`
-3. 打 tag 或手动 `workflow_dispatch` 触发
+```bash
+npm view mirajay-cli version
+npx mirajay-cli --help
+# 或
+npm i -g mirajay-cli
+mirajay-cli --help
+```
+
+> 若提示包名已被占用：改 `name` 为 scope 包，例如 `"name": "@mirajay/cli"`，并执行  
+> `npm publish --access public`。
+
+---
+
+### 3.5 以后怎么发新版本？
+
+**不要**直接改版本号却忘记打 tag；推荐：
+
+```bash
+# 1. 改完代码，测试通过，先推到 GitHub
+git add .
+git commit -m "feat: xxx"
+git push origin main
+
+# 2. 升版本（会改 package.json 并自动打 git tag）
+npm version patch   # 修 bug：1.0.0 → 1.0.1
+# npm version minor # 新功能：1.0.0 → 1.1.0
+# npm version major # 破坏性变更：1.0.0 → 2.0.0
+
+# 3. 推送提交与 tag
+git push origin main --follow-tags
+
+# 4. 发布到 npm（同一版本只能发一次，不能覆盖）
+npm publish
+```
+
+同一 `version` 发过之后不能再发；要修只能再升版本（如 `1.0.2`）。
+
+---
+
+### 3.6 用 GitHub Actions 自动发 npm（配置 Secrets + workflow）
+
+仓库文件：[`.github/workflows/release.yml`](../.github/workflows/release.yml)。
+
+#### 你需要准备什么？
+
+| Token | 要不要放进 GitHub Secrets？ | 说明 |
+|-------|---------------------------|------|
+| **npm token** | **要**，名称必须叫 `NPM_TOKEN` | 用来 `npm publish` |
+| **GitHub PAT / token** | **一般不要** | Actions 自带 `GITHUB_TOKEN`，checkout/读仓库够用；只有你要跨仓库操作才需要自建 PAT |
+
+#### A. 在 npm 上创建 Token
+
+1. 登录 https://www.npmjs.com/  
+2. 右上角头像 → **Access Tokens**（或打开 https://www.npmjs.com/settings/~/tokens ）  
+3. **Generate New Token**：  
+   - 推荐 **Granular Access Token**  
+     - Permissions：对包 `mirajay-cli` 勾选 **Read and write**（或 Organizations 下 publish）  
+     - 或经典 **Automation** token（适合 CI，不会因 2FA 卡住）  
+4. 复制生成的字符串（只显示一次），形如 `npm_xxxx...`
+
+#### B. 在 GitHub 仓库里添加 Secret（网页点选）
+
+1. 打开 https://github.com/mirajay/mirajay-cli  
+2. **Settings** → 左侧 **Secrets and variables** → **Actions**  
+3. **New repository secret**  
+4. 填写：  
+   - **Name**：`NPM_TOKEN`（必须与 workflow 里 `secrets.NPM_TOKEN` 一致）  
+   - **Secret**：粘贴刚才的 npm token  
+5. 点 **Add secret**
+
+> 不要把 token 写进 `release.yml` 明文，也不要提交到仓库。
+
+#### C. workflow 里关键几行（已写好，理解即可）
+
+```yaml
+- name: Setup Node
+  uses: actions/setup-node@v4
+  with:
+    node-version: 24
+    registry-url: https://registry.npmjs.org   # 必须，才会写 npm 登录配置
+
+- name: Publish to npm
+  run: npm publish --access public --provenance
+  env:
+    NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}  # 读取你配置的 Secret
+```
+
+#### D. 怎么触发自动发布？
+
+**方式 1：打版本 tag（推荐）**
+
+先保证 `package.json` 的 `version` 已升到要发的版本，并已 push 到 `main`：
+
+```bash
+# 本地改完并测试通过后
+npm version patch          # 例如 1.0.0 → 1.0.1，并生成 tag v1.0.1
+git push origin main --follow-tags
+```
+
+推送 `v*` tag 会触发 **Release npm** workflow，自动 `npm publish`。
+
+**方式 2：Actions 手动跑**
+
+1. 仓库 → **Actions** → 左侧 **Release npm**  
+2. **Run workflow**  
+3. 可选勾选 **dry_run**（只演练不上传）  
+4. 不勾 dry_run 则按当前 `package.json` 的 version 真正发布  
+
+注意：手动跑前，`package.json` 的 version 必须是 npm 上**还没有**的版本。
+
+#### E. 自检
+
+- [ ] Secrets 里有 `NPM_TOKEN`  
+- [ ] `release.yml` 已在 `main`  
+- [ ] Actions → Release npm 跑绿  
+- [ ] https://www.npmjs.com/package/mirajay-cli 版本已更新  
+
+#### F. 常见报错
+
+| 现象 | 处理 |
+|------|------|
+| `ENEEDAUTH` / 401 | Secret 名不是 `NPM_TOKEN`，或 token 无效/过期，重新生成并更新 Secret |
+| **403 … Two-factor authentication or granular access token with bypass 2fa** | 见下方 **§3.6.1**（最常见） |
+| 403 Forbidden（其它） | token 权限不够，或包名不属于你的账号 |
+| 不能覆盖已有版本 | 先 `npm version patch` 再推 tag |
+| `--provenance` 失败 | 已从默认流程去掉；需要时可再加回并确认 `id-token: write` |
+| Actions 只看到 `exit code 1` / log 路径 | 在失败步骤日志里**往上翻**，找 `npm error code` / `403` / `ENEEDAUTH` |
+| Secret 为空 | Settings → Secrets 确认名称正好是 `NPM_TOKEN`，且用的是 **npm** token |
+| 用了 GitHub PAT 当 NPM_TOKEN | 无效；必须换成 npmjs.com 生成的 token |
+
+#### 3.6.1 专门处理：403 要求 2FA / granular bypass 2fa
+
+报错原文类似：
+
+```text
+403 Forbidden - Two-factor authentication or granular access token
+with bypass 2fa enabled is required to publish packages.
+```
+
+说明：npm 现在要求「开了 2FA」或「带绕过 2FA 的 Granular Token」才能 publish。CI 里用的 token 类型不对就会 403。
+
+**推荐做法（适合 GitHub Actions）：**
+
+1. 打开 https://www.npmjs.com/settings/~/tokens  
+2. **Generate New Token → Granular Access Token**  
+3. 关键选项大致这样填：  
+   - **Token name**：`github-actions-mirajay-cli`  
+   - **Expiration**：按需（如 90 days / 1 year）  
+   - **Packages and scopes**：选 **Read and write**  
+   - 在包权限里允许对 `mirajay-cli`（或 “All packages”）的 **publish**  
+   - 必须勾选类似：  
+     **Bypass two-factor authentication** / **Bypass 2FA for automation**  
+     （没有这一项，CI 仍会 403）  
+4. 生成后复制 token → 更新 GitHub Secret `NPM_TOKEN`（旧的删掉重加，或 Update）  
+5. 再跑 **Release npm**
+
+**备选做法：**
+
+1. 账号开启 2FA：npm → Account → **Two-Factor Authentication**  
+2. 再生成经典 **Automation** token（专门给 CI，不受登录 2FA 交互卡住）  
+3. 把 Automation token 设为 `NPM_TOKEN`
+
+> 不要用：仅 Read-only 的 token、未勾选 bypass 2fa 的 granular token、GitHub PAT。
+
+本地若也要发：开 2FA 后用 `npm login`，或同样使用带 bypass 的 granular / automation token 写入本机 `~/.npmrc`（勿提交进仓库）。
+
+---
+
+### 3.7 npm 发布检查清单
+
+- [ ] `npm whoami` 已登录  
+- [ ] `pnpm test` / `pnpm build` 通过  
+- [ ] `npm pack --dry-run` 文件列表正确  
+- [ ] `npm publish --dry-run` 无报错  
+- [ ] `npm publish` 成功  
+- [ ] https://www.npmjs.com/package/mirajay-cli 可打开  
+- [ ] `npx mirajay-cli --help` 可用  
 
 ---
 
@@ -273,3 +496,15 @@ npm publish
 
 **Q: npm 提示缺 dist？**  
 先 `pnpm build`，或依赖 `prepublishOnly`；确认 `files` 含 `dist`。
+
+**Q: `npm whoami` 报 ENEEDAUTH？**  
+本机未登录：执行 `npm login` 完成浏览器/账号登录后再发。
+
+**Q: 发布报 403 / 包名不可用？**  
+包名已被别人占用，或你没有该包权限。换 `name`，或用 scope：`@mirajay/cli` + `npm publish --access public`。
+
+**Q: 同一版本再次 publish 失败？**  
+npm 不允许覆盖已发布版本。执行 `npm version patch` 后再 `npm publish`。
+
+名称包
+作者

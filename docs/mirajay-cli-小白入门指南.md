@@ -1392,21 +1392,68 @@ vue-admin/
 │       │   ├── App.vue
 │       │   └── main.ts
 │       ├── index.html
-│       ├── package.json
+│       ├── package.json          # ESLint / Stylelint / Vitest
+│       ├── eslint.config.js
+│       ├── stylelint.config.mjs
+│       ├── vitest.config.ts
 │       └── vite.config.ts
 ├── packages/
 │   └── shared/
 │       ├── src/
 │       │   └── index.ts
-│       └── package.json
+│       └── package.json          # 不单独注入 lint
 ├── turbo.json
 ├── pnpm-workspace.yaml
-├── package.json
-├── eslint.config.js
-├── prettier.config.mjs
+├── package.json                  # turbo + Prettier 等共享工具 + Git hooks
+├── prettier.config.mjs           # 全仓共享格式化
+├── .editorconfig
 ├── .husky/
+├── commitlint.config.cjs
+├── lint-staged.config.mjs
 └── README.md
 ```
+
+> Monorepo（含 Module Federation）统一：**根目录**放 Prettier / EditorConfig / markdownlint / cspell 与 Git hooks；**主应用**放 ESLint / Stylelint / Vitest。详见 [工程化体系](./06-工程化体系.md) 与 [changelog](./changelog.md)。
+
+#### 根资源 & 包间引用（必读）
+
+生成后请在**仓库根**操作：
+
+```bash
+pnpm install    # 建立 workspace 链接
+pnpm format     # 用根上的 Prettier（配置在根 prettier.config.mjs）
+pnpm build      # turbo 调度 apps/web 构建
+```
+
+**根目录资源怎么被用到？**
+
+- 根装着 `prettier` / `turbo` / husky 等全仓工具；子包通过根脚本和「配置向上查找」受益，而不是 `import` 根文件。
+- 例如 Prettier：从被格式化的文件目录一路往上找到根上的 `prettier.config.mjs`。
+
+**子包怎么调用另一个包？**
+
+`apps/web/package.json` 中已有：
+
+```json
+"@vue-admin/shared": "workspace:*"
+```
+
+（包名随项目名变化，形如 `@<projectName>/shared`。）
+
+在 `apps/web` 源码中：
+
+```ts
+import { formatDate, capitalize } from '@vue-admin/shared'
+```
+
+pnpm 会把 `@vue-admin/shared` 软链到 `packages/shared`。安装后可检查：
+
+```bash
+ls -la apps/web/node_modules/@vue-admin/shared
+# → ../../../../packages/shared
+```
+
+更完整的图示与禁忌（避免循环依赖、避免相对路径穿透）见 [05-模板系统详解](./05-模板系统详解.md#根目录资源如何被用到子包如何互相引用)。
 
 ### 10.3 shadcn/ui 项目
 
@@ -1988,6 +2035,10 @@ A: 多半依赖没装全，在项目目录执行 `pnpm install`。若刚改过�
 **Q: Monorepo 里该进哪个目录跑？**
 
 A: 根目录执行 `pnpm dev`（由 Turborepo / workspace 脚本编排）。业务代码通常在 `apps/web`（桌面 / H5 场景）。
+
+**Q: 子包怎么用到根上的 Prettier？另一个包的代码怎么引用？**
+
+A: 根上跑 `pnpm format`（工具与配置在根）；包间用 `"@项目名/shared": "workspace:*"` 再 `import from '@项目名/shared'`。详见 [05-模板系统详解](./05-模板系统详解.md#根目录资源如何被用到子包如何互相引用) 与上文「根资源 & 包间引用」。
 
 ---
 

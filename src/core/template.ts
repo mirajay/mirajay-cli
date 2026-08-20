@@ -7,7 +7,14 @@ import { hooks } from './hooks.js'
 import { hasAnyEngineering, resolveEngineeringOptions, supportsJsEngineering } from './engineering.js'
 import { getEngineeringManifest } from './engineering-manifest.js'
 import { mergePackageManifest } from './merge-package.js'
-import { mergeEngineeringToWorkspacePackages } from './monorepo-engineering.js'
+import {
+  isWorkspaceEngineeringMonorepo,
+  matchesEngineeringFileScope,
+  mergeEngineeringToWorkspacePackages,
+  resolveEngineeringAppDir,
+  resolveEngineeringAppRelativePath,
+  type EngineeringFileScope,
+} from './monorepo-engineering.js'
 import {
   resolveEngineeringProfile,
   profileUsesReact,
@@ -349,6 +356,8 @@ export interface RenderContext extends ProjectAnswers {
   readmeCommandsSection: string
   readmeStructureSection: string
   sharedPackageName: string
+  /** Monorepo 主应用相对路径（apps/web | apps/host | .），供 lint-staged 等引用 */
+  engineeringAppPath: string
 }
 
 async function renderFile(
@@ -376,10 +385,15 @@ async function renderTemplateDir(
   targetDir: string,
   context: RenderContext,
   answers: ProjectAnswers,
-  options?: { engineeringMode?: boolean; engineering?: EngineeringOptions },
+  options?: {
+    engineeringMode?: boolean
+    engineering?: EngineeringOptions
+    fileScope?: EngineeringFileScope
+  },
 ): Promise<void> {
   const files = await collectFiles(templateDir)
   const engineering = options?.engineering
+  const fileScope = options?.fileScope ?? 'all'
 
   for (const file of files) {
     if (shouldSkipFile(file, answers)) continue
@@ -388,6 +402,9 @@ async function renderTemplateDir(
       engineering &&
       shouldSkipEngineeringFile(file, answers, engineering)
     ) {
+      continue
+    }
+    if (options?.engineeringMode && !matchesEngineeringFileScope(file, fileScope)) {
       continue
     }
 
@@ -469,6 +486,7 @@ export async function generateProject(options: {
     readmeCommandsSection: buildReadmeCommandsSection(readmeCtx),
     readmeStructureSection: buildReadmeStructureSection(projectName, readmeCtx),
     sharedPackageName: `@${projectName}/shared`,
+    engineeringAppPath: resolveEngineeringAppRelativePath(answers, templateName),
     ...(answers.mobilePlatform === 'flutter'
       ? {
           flutterStateManagement: answers.flutterStateManagement ?? 'Provider',
@@ -496,55 +514,85 @@ export async function generateProject(options: {
     const engineeringDir = join(localTemplatesDir, 'engineering-base')
     try {
       await stat(engineeringDir)
+      const isWorkspaceMonorepo = isWorkspaceEngineeringMonorepo(answers, templateName)
+      const engineeringAppDir = resolveEngineeringAppDir(targetDir, answers, templateName)
+      const useTs = resolveUseTypeScript(answers)
+
       step('合并工程化配置 (ESLint / Prettier / Stylelint / ...)...')
-      await renderTemplateDir(engineeringDir, appTargetDir, context, answers, {
-        engineeringMode: true,
-        engineering,
-      })
 
-      const isMonorepo = shouldUseMonorepoLayout(answers, templateName)
-      const manifest = getEngineeringManifest({
-        profile,
-        engineering,
-        useTypeScript: resolveUseTypeScript(answers),
-        includeGitHooks: !isMonorepo,
-      })
-      await mergePackageManifest(appTargetDir, manifest)
-
-      await mergeEngineeringToWorkspacePackages({
-        rootDir: targetDir,
-        answers,
-        engineering,
-      })
-
-      if (isMonorepo && (engineering.husky || engineering.commitlint || engineering.lintStaged)) {
-        step('配置 Git 提交规范 (commitlint + husky + lint-staged)...')
-        await renderGitHooksFiles({
-          gitRootDir: targetDir,
-          context,
+      if (isWorkspaceMonorepo) {
+        // 根：共享规范；主应用：框架相关配置（desktop→apps/web，MF→apps/host）
+        await renderTemplateDir(engineeringDir, targetDir, context, answers, {
+          engineeringMode: true,
           engineering,
-          templatesDir,
+          fileScope: 'shared',
+        })
+        await renderTemplateDir(engineeringDir, engineeringAppDir, context, answers, {
+          engineeringMode: true,
+          engineering,
+          fileScope: 'app',
         })
 
-        const gitManifest = getEngineeringManifest({
-          profile,
+        await mergePackageManifest(
+          targetDir,
+          getEngineeringManifest({
+            profile,
+            engineering,
+            useTypeScript: useTs,
+            includeGitHooks: false,
+            scope: 'shared',
+          }),
+        )
+
+        await mergeEngineeringToWorkspacePackages({
+          rootDir: targetDir,
+          answers,
           engineering,
-          useTypeScript: resolveUseTypeScript(answers),
-          includeGitHooks: true,
         })
-        // Monorepo 根目录只保留 Git hooks 相关依赖与脚本
-        gitManifest.devDependencies = Object.fromEntries(
-          Object.entries(gitManifest.devDependencies).filter(([name]) =>
-            ['@commitlint/cli', '@commitlint/config-conventional', 'cz-git', 'husky', 'lint-staged'].includes(name),
-          ),
+
+        if (engineering.husky || engineering.commitlint || engineering.lintStaged) {
+          step('配置 Git 提交规范 (commitlint + husky + lint-staged)...')
+          await renderGitHooksFiles({
+            gitRootDir: targetDir,
+            context,
+            engineering,
+            templatesDir,
+          })
+          await mergePackageManifest(
+            targetDir,
+            getEngineeringManifest({
+              profile,
+              engineering,
+              useTypeScript: useTs,
+              includeGitHooks: true,
+              scope: 'hooks',
+            }),
+          )
+        }
+      } else {
+        await renderTemplateDir(engineeringDir, appTargetDir, context, answers, {
+          engineeringMode: true,
+          engineering,
+          fileScope: 'all',
+        })
+
+        await mergePackageManifest(
+          appTargetDir,
+          getEngineeringManifest({
+            profile,
+            engineering,
+            useTypeScript: useTs,
+            includeGitHooks: true,
+            scope: 'all',
+          }),
         )
-        gitManifest.scripts = Object.fromEntries(
-          Object.entries(gitManifest.scripts).filter(([key]) =>
-            ['commit', 'prepare'].includes(key),
-          ),
-        )
-        await mergePackageManifest(targetDir, gitManifest)
-      } else if (!isMonorepo) {
+
+        await mergeEngineeringToWorkspacePackages({
+          rootDir: targetDir,
+          answers,
+          engineering,
+        })
+
         await renderGitHooksFiles({
           gitRootDir: appTargetDir,
           context,

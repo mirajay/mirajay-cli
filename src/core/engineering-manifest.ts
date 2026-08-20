@@ -169,18 +169,34 @@ function getStylelintGlob(profile: EngineeringProfile): string {
   return '**/*.{css,scss}'
 }
 
+export type EngineeringManifestScope = 'all' | 'shared' | 'app' | 'hooks'
+
 export function getEngineeringManifest(options: {
   profile: EngineeringProfile
   engineering: EngineeringOptions
   useTypeScript?: boolean
   includeGitHooks?: boolean
+  /** all=扁平全量；shared=根共享工具；app=子包框架工具；hooks=仅 Git hooks */
+  scope?: EngineeringManifestScope
 }): PackageManifestPatch {
-  const { profile, engineering, useTypeScript = true, includeGitHooks = true } = options
+  const {
+    profile,
+    engineering,
+    useTypeScript = true,
+    includeGitHooks = true,
+    scope = 'all',
+  } = options
+  const wantShared = scope === 'all' || scope === 'shared'
+  const wantApp = scope === 'all' || scope === 'app'
+  const wantHooks = scope === 'hooks' || (scope === 'all' && includeGitHooks)
+  /** Monorepo 根保留 turbo lint，shared 只挂 format / lint:md 等，不写组合 lint */
+  const omitCombinedLint = scope === 'shared' || scope === 'hooks'
+
   const devDependencies: Record<string, string> = {}
   const scripts: Record<string, string> = {}
   const lintParts: string[] = []
 
-  if (engineering.eslint) {
+  if (wantApp && engineering.eslint) {
     const eslintDeps = { ...getEslintDeps(profile) }
     if (!useTypeScript) {
       delete eslintDeps['typescript-eslint']
@@ -190,62 +206,68 @@ export function getEngineeringManifest(options: {
     lintParts.push('eslint .')
   }
 
-  if (engineering.prettier) {
+  if (wantShared && engineering.prettier) {
     Object.assign(devDependencies, PRETTIER_DEPS)
     scripts['format'] = 'prettier --write .'
     scripts['format:check'] = 'prettier --check .'
-    lintParts.unshift('prettier --write .')
+    if (!omitCombinedLint) {
+      lintParts.unshift('prettier --write .')
+    }
   }
 
-  if (engineering.stylelint) {
+  if (wantApp && engineering.stylelint) {
     Object.assign(devDependencies, getStylelintDeps(profile))
     const stylelintGlob = getStylelintGlob(profile)
     scripts['lint:style'] = `stylelint "${stylelintGlob}" --allow-empty-input`
     lintParts.push(`stylelint "${stylelintGlob}" --allow-empty-input`)
   }
 
-  if (engineering.markdownlint) {
+  if (wantShared && engineering.markdownlint) {
     Object.assign(devDependencies, MARKDOWNLINT_DEPS)
     scripts['lint:md'] = 'markdownlint "**/*.md"'
-    lintParts.push('markdownlint "**/*.md"')
+    if (!omitCombinedLint) {
+      lintParts.push('markdownlint "**/*.md"')
+    }
   }
 
-  if (engineering.spellcheck) {
+  if (wantShared && engineering.spellcheck) {
     Object.assign(devDependencies, CSPELL_DEPS)
     const spellGlob = useTypeScript
       ? 'cspell "**/*.{ts,tsx,vue,md,json}"'
       : 'cspell "**/*.{js,jsx,vue,md,json}"'
     scripts['lint:spell'] = spellGlob
-    lintParts.push(spellGlob)
+    if (!omitCombinedLint) {
+      lintParts.push(spellGlob)
+    }
   }
 
-  if (engineering.vitest) {
+  if (wantApp && engineering.vitest) {
     Object.assign(devDependencies, getVitestDeps(profile))
     scripts.test = 'vitest run'
     scripts['test:watch'] = 'vitest'
   }
 
-  if (includeGitHooks && engineering.commitlint) {
+  if (wantHooks && engineering.commitlint) {
     Object.assign(devDependencies, COMMITLINT_DEPS)
     scripts.commit = 'cz'
   }
 
-  if (includeGitHooks && engineering.husky) {
+  if (wantHooks && engineering.husky) {
     Object.assign(devDependencies, HUSKY_DEPS)
     scripts.prepare = 'husky'
   }
 
-  if (includeGitHooks && engineering.lintStaged) {
+  if (wantHooks && engineering.lintStaged) {
     Object.assign(devDependencies, LINT_STAGED_DEPS)
   }
 
-  if (lintParts.length > 0) {
+  if (!omitCombinedLint && lintParts.length > 0) {
     scripts.lint = lintParts.join(' && ')
   }
 
   const patch: PackageManifestPatch = { devDependencies, scripts }
 
-  if (includeGitHooks && engineering.commitlint) {
+  if (wantHooks && engineering.commitlint) {
     patch.config = COMMITIZEN_CONFIG
   }
 

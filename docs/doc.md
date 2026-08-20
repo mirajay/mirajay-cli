@@ -354,7 +354,7 @@ export default {
 - **Turborepo**：微前端或跨端项目默认推荐 Monorepo 管理，利用 `turbo.json` 编排构建、lint、test。
 - **engineering-base**：init 时按预设合并 ESLint 9 flat config、Prettier、Stylelint、markdownlint、cspell、Vitest、commitlint、husky、lint-staged。
 - **Git 规范**：Strict 预设启用 commitlint + cz-git + husky + lint-staged；init 时先初始化 Git 再安装依赖以确保 husky prepare 生效。
-- **Monorepo 工程化**：微前端 Module Federation 等 Monorepo 模板会向 `apps/*`、`packages/*` 子包同步注入 lint/test 脚本与 devDependencies。
+- **Monorepo 工程化**：桌面/移动 Monorepo 与 Module Federation 统一分层——根目录放 Prettier 等共享规范与 Git hooks，`apps/*` 放 ESLint/Stylelint/Vitest；`packages/*` 不注入 lint。
 - **平台 ESLint**：Taro / uni-app / React Native 使用独立 ESLint 配置与插件（含 `@react-native` 规则）。
 - **远程模板 (giget)**：支持 `--from gh:org/repo/path` 或 `.clirc` 中 `remoteTemplates` 映射，缓存至 `~/.cache/mirajay-cli/templates`。
 - **shadcn/ui**：预置 Button + Card，init 后自动尝试 `shadcn add input label separator`，并提供 `pnpm ui:add` 脚本。
@@ -363,6 +363,20 @@ export default {
 - **Lint 统一**：`cli lint` 按项目已生成的配置文件探测运行；`cli commit` 检测 cz-git / commitlint 是否已配置。
 - **Flutter 专项**：Flutter 项目使用 `flutter_lints` 和 `flutter analyze`，脚手架 lint 命令自动识别项目类型并调用对应检查。
 - **CI/CD**：每个模板提供对应 CI 示例文件（GitHub Actions / GitLab CI），包括构建、测试、发布流程。
+
+---
+
+## 六（附）、版本迭代说明
+
+详细变更日志见独立文档：[changelog.md](./changelog.md)。
+
+### 1.1.0 摘要（2026-08-20）
+
+- **Monorepo 工程化统一分层**：根共享 Prettier 等；主应用放 ESLint/Stylelint/Vitest；`packages/*` 不注入 lint。
+- **MF**：根补齐 `test`；Vue remote `index.html` 入口修正；Vue ESLint 支持 `.vue` 内 TypeScript。
+- **wujie-vue**：修复 `fetch` 类型导致的构建失败。
+
+发布与版本号约定亦见 [publishing.md](./publishing.md)。
 
 ---
 

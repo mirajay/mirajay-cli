@@ -9,6 +9,7 @@
 - **全端覆盖**：桌面 Web (SPA/SSG)、移动端 (H5/Taro/uni-app/RN/Flutter)、微前端 (Module Federation/wujie/micro-app/qiankun)
 - **交互式初始化**：通过 `@inquirer/prompts` 引导选择项目类型、框架、UI 库、CSS 方案及工程化预设
 - **模板引擎**：EJS 动态生成项目文件，支持条件过滤；工程化配置由 `engineering-base` 共享层合并注入
+- **Monorepo 工程化分层**：工作区根放 Prettier / Git hooks，主应用放 ESLint / Stylelint / Vitest（桌面 Monorepo 与 Module Federation 统一）
 - **插件体系**：基于 hookable 的生命周期钩子，支持插件扩展
 - **跨端骨架**：Taro / uni-app / React Native (Expo Router) 最小可运行模板
 - **远程模板 (giget)**：`mirajay-cli init app --from gh:org/repo/templates/desktop-react`
@@ -148,6 +149,7 @@ mirajay-cli/
 
 - 本地预览：`pnpm docs:dev`
 - [文档中心（学习路径）](./docs/index.md)
+- [版本变更与迭代说明](./docs/changelog.md)
 - [小白入门指南](./docs/mirajay-cli-小白入门指南.md)
 - [快速入门](./docs/00-快速入门.md)
 - [GitHub / npm / Pages 发布说明](./docs/publishing.md)

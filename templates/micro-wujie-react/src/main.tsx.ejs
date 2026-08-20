@@ -9,7 +9,8 @@ setupApp({
   url: 'http://localhost:5174',
   exec: true,
   alive: true,
-  fetch: (url<% if (useTypeScript) { %>: string, options?: RequestInit<% } %>) => window.fetch(url, { ...options, mode: 'cors' }),
+  fetch: (url<% if (useTypeScript) { %>: RequestInfo | URL, options?: RequestInit<% } %>) =>
+    window.fetch(url, { ...options, mode: 'cors' }),
 })
 
 preloadApp({ name: 'sub-app-react' })

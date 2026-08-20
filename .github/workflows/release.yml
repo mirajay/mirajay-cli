@@ -1,5 +1,5 @@
-# 可选：打 tag 或手动触发后发布到 npm。
-# 使用前：仓库 Settings → Secrets → Actions 添加 NPM_TOKEN（npm Automation token）
+# 推送 v* tag 或手动 Run workflow 时发布到 npm
+# 仓库 Secret：NPM_TOKEN = npm Automation / Granular token（不要用 GitHub PAT）
 name: Release npm
 
 on:
@@ -7,10 +7,21 @@ on:
     tags:
       - 'v*'
   workflow_dispatch:
+    inputs:
+      dry_run:
+        description: '只干跑 publish，不真正上传 npm'
+        required: false
+        type: boolean
+        default: false
+
+concurrency:
+  group: release-npm
+  cancel-in-progress: false
 
 jobs:
   publish:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
       contents: read
       id-token: write
@@ -18,7 +29,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # 版本由 package.json 的 packageManager 决定，勿再写 version
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
 
@@ -29,8 +39,21 @@ jobs:
           cache: pnpm
           registry-url: https://registry.npmjs.org
 
+      - name: Check NPM_TOKEN secret
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          if [ -z "$NODE_AUTH_TOKEN" ]; then
+            echo "::error::Secret NPM_TOKEN 为空。请到仓库 Settings → Secrets and variables → Actions 添加 NPM_TOKEN（npm 的 token，不是 GitHub token）。"
+            exit 1
+          fi
+          echo "NPM_TOKEN is set (length=${#NODE_AUTH_TOKEN})"
+
       - name: Install
         run: pnpm install --frozen-lockfile
+
+      - name: Typecheck
+        run: pnpm typecheck
 
       - name: Test
         run: pnpm test
@@ -38,7 +61,19 @@ jobs:
       - name: Build
         run: pnpm build
 
-      - name: Publish
+      - name: Show package identity
+        run: |
+          node -e "const p=require('./package.json'); console.log('name=', p.name); console.log('version=', p.version)"
+
+      # 先不带 --provenance：首次发包 / 部分 token 下 provenance 容易失败
+      - name: Publish (dry-run)
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}
+        run: npm publish --access public --dry-run
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish to npm
+        if: ${{ github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && !inputs.dry_run) }}
         run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

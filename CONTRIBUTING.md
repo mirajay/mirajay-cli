@@ -48,6 +48,10 @@ registerPlugin({
 })
 ```
 
+## 文档
+
+功能与行为变更请同步更新 `docs/`，版本说明写入 [docs/changelog.md](./docs/changelog.md)。
+
 ## 提交规范
 
 使用 Conventional Commits 规范：

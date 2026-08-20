@@ -253,11 +253,12 @@ interface RenderContext extends ProjectAnswers {
   readmeCommandsSection: string    // README 命令段
   readmeStructureSection: string   // README 结构段
   sharedPackageName: string       // Monorepo 共享包名
+  engineeringAppPath: string      // 主应用相对路径：apps/web | apps/host | .
   // ... 以及所有 ProjectAnswers 字段
 }
 ```
 
-这意味着模板中的 `.ejs` 文件可以直接使用 `<%= projectName %>`、`<% if (engineering.eslint) { %>` 等语法进行条件渲染。
+工作区工程化按 `fileScope: 'shared' | 'app'` 分别渲染到根与主应用；`getEngineeringManifest({ scope })` 同步拆分依赖。详见 [changelog 1.1.0](./changelog.md)。
 
 ### 4.3 工程化配置体系
 
@@ -389,23 +390,19 @@ registerPlugin({
 当用户选择 Monorepo 时，项目结构会从扁平布局转换为 Turborepo 布局：
 
 ```
-扁平布局 (useMonorepo: false)        Monorepo 布局 (useMonorepo: true)
+扁平布局 (useMonorepo: false)        Monorepo 布局 (workspace)
                                       my-app/
 my-app/                               ├── turbo.json
 ├── package.json                      ├── pnpm-workspace.yaml
-├── vite.config.ts                    ├── package.json (root)
-├── eslint.config.js                  ├── apps/
-├── src/                              │   └── web/
-│   ├── App.tsx                       │       ├── package.json
-│   └── ...                           │       ├── vite.config.ts
-└── ...                               │       ├── eslint.config.js
-                                      │       └── src/
-                                      │           ├── App.tsx
-                                      │           └── ...
+├── vite.config.ts                    ├── package.json (root: shared lint tools + hooks)
+├── eslint.config.js                  ├── prettier.config.mjs
+├── prettier.config.mjs               ├── apps/
+├── src/                              │   └── web/   (MF 则为 host/)
+│   ├── App.tsx                       │       ├── package.json (eslint/stylelint/vitest)
+│   └── ...                           │       ├── eslint.config.js
+└── ...                               │       └── src/
                                       └── packages/
                                           └── shared/
-                                              ├── package.json
-                                              └── src/
 ```
 
 `finalizeMonorepoLayout` 负责渲染 `monorepo-base` 模板（turbo.json、pnpm-workspace.yaml 等）到根目录，同时将业务模板渲染到 `apps/web/` 子目录。微前端项目（`micro-*` 模板）跳过 Monorepo 布局，因为它们自带多 app 结构。

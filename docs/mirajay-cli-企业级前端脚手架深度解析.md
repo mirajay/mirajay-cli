@@ -676,31 +676,28 @@ export function resolveAppTargetDir(
 
 ### 7.3 package.json 合并策略
 
+工作区 Monorepo（含 Module Federation）按 **scope** 拆分合并，而不是把所有工程化依赖堆进同一个 `package.json`：
+
 ```mermaid
 flowchart TD
-    subgraph 模板 package.json
-        Pkg1[基础依赖<br/>react, vite, ...]
+    subgraph 根 package.json
+        RootBase[turbo / workspace]
+        Shared[Prettier / markdownlint / cspell]
+        Hooks[husky / commitlint / lint-staged]
     end
-    
-    subgraph 工程化合并
-        Pkg2[ESLint 依赖<br/>eslint, typescript-eslint]
-        Pkg3[Prettier 依赖<br/>prettier]
-        Pkg4[Vitest 依赖<br/>vitest, @testing-library]
-        Pkg5[Git Hooks 依赖<br/>husky, lint-staged, commitlint]
+
+    subgraph apps/web 或 apps/host
+        AppBase[业务依赖]
+        AppLint[ESLint / Stylelint / Vitest]
     end
-    
-    subgraph 最终 package.json
-        Final[合并后结果]
-    end
-    
-    Pkg1 --> Final
-    Pkg2 --> Final
-    Pkg3 --> Final
-    Pkg4 --> Final
-    Pkg5 --> Final
-    
-    Final -->|合并策略| MergeFn[mergePackageManifest<br/>依赖合并 + 脚本合并]
+
+    ManifestShared["getEngineeringManifest(scope: shared)"] --> Shared
+    ManifestApp["getEngineeringManifest(scope: app)"] --> AppLint
+    ManifestHooks["getEngineeringManifest(scope: hooks)"] --> Hooks
+    AppBase --> AppLint
 ```
+
+扁平（非 Monorepo）项目仍使用 `scope: 'all'`，配置与依赖全部落在项目根。
 
 ---
 
@@ -826,13 +823,16 @@ my-micro-app/
 │   └── host/                    # 主应用
 │       ├── src/
 │       │   ├── main.tsx
-│       │   └── vite-env.d.ts
+│       │   └── __tests__/
+│       ├── eslint.config.js     # 框架相关 lint
+│       ├── stylelint.config.mjs
+│       ├── vitest.config.ts
 │       ├── index.html
 │       ├── package.json
 │       ├── tsconfig.json
 │       └── vite.config.ts
 ├── packages/
-│   └── remote-app/              # 远程子应用
+│   └── remote-app/              # 远程子应用（不注入 lint）
 │       ├── src/
 │       │   ├── Header.tsx
 │       │   └── main.tsx
@@ -840,17 +840,17 @@ my-micro-app/
 │       ├── package.json
 │       ├── tsconfig.json
 │       └── vite.config.ts
-├── package.json                 # Monorepo 根配置
-├── pnpm-workspace.yaml          # pnpm 工作区配置
-├── turbo.json                   # Turborepo 配置
-├── eslint.config.js             # ESLint 配置
-├── prettier.config.mjs          # Prettier 配置
-├── stylelint.config.mjs         # Stylelint 配置
-├── vitest.config.ts             # Vitest 配置
-├── .husky/                      # Git Hooks
-├── commitlint.config.cjs        # commitlint 配置
-└── lint-staged.config.mjs       # lint-staged 配置
+├── package.json                 # turbo + Prettier 等共享工具 + hooks
+├── pnpm-workspace.yaml
+├── turbo.json                   # 含 build / lint / test
+├── prettier.config.mjs          # 全仓格式化（根）
+├── .editorconfig
+├── .husky/
+├── commitlint.config.cjs
+└── lint-staged.config.mjs
 ```
+
+> 与桌面 Monorepo 相同分层：根共享规范，主应用放 ESLint/Stylelint/Vitest。见 [changelog 1.1.0](./changelog.md)。
 
 ### 9.3 一键开发
 

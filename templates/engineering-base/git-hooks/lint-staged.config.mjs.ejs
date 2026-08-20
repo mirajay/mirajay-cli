@@ -1,14 +1,16 @@
 /** @type {import('lint-staged').Config} */
 export default {
-<% const codeGlob = useMonorepo ? 'apps/**/*.{ts,tsx,vue,js,jsx}' : '*.{ts,tsx,vue,js,jsx}' -%>
-<% const styleGlob = useMonorepo
+<% const appPath = typeof engineeringAppPath !== 'undefined' ? engineeringAppPath : (useMonorepo ? 'apps/web' : '.') -%>
+<% const isWorkspace = appPath !== '.' -%>
+<% const codeGlob = isWorkspace ? 'apps/**/*.{ts,tsx,vue,js,jsx}' : '*.{ts,tsx,vue,js,jsx}' -%>
+<% const styleGlob = isWorkspace
   ? (framework === 'vue' ? 'apps/**/*.{css,scss,vue}' : 'apps/**/*.{css,scss}')
   : (framework === 'vue' ? '*.{css,scss,vue}' : '*.{css,scss}') -%>
-<% const formatGlob = useMonorepo
-  ? 'apps/**/*.{ts,tsx,vue,js,jsx,json,md,css,scss}'
+<% const formatGlob = isWorkspace
+  ? '{apps,packages}/**/*.{ts,tsx,vue,js,jsx,json,md,css,scss}'
   : '*.{ts,tsx,vue,js,jsx,json,md,css,scss}' -%>
-<% const eslintConfig = useMonorepo ? ' --config apps/web/eslint.config.js' : '' -%>
-<% const stylelintConfig = useMonorepo ? ' --config apps/web/stylelint.config.mjs' : '' -%>
+<% const eslintConfig = isWorkspace ? ` --config ${appPath}/eslint.config.js` : '' -%>
+<% const stylelintConfig = isWorkspace ? ` --config ${appPath}/stylelint.config.mjs` : '' -%>
 <% if (engineering.eslint) { -%>
   '<%= codeGlob %>': ['eslint --fix<%= eslintConfig %>'],
 <% } -%>
@@ -19,6 +21,6 @@ export default {
   '<%= formatGlob %>': ['prettier --write'],
 <% } -%>
 <% if (engineering.spellcheck) { -%>
-  '<%= useMonorepo ? '**/*.{ts,tsx,vue,js,jsx,md,json}' : '**/*.{ts,tsx,vue,js,jsx,md,json}' %>': ['cspell --no-must-find-files'],
+  '<%= isWorkspace ? '**/*.{ts,tsx,vue,js,jsx,md,json}' : '**/*.{ts,tsx,vue,js,jsx,md,json}' %>': ['cspell --no-must-find-files'],
 <% } -%>
 }

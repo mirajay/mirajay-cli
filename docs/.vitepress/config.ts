@@ -42,6 +42,7 @@ export default defineConfig({
     nav: [
       { text: '指南', link: '/00-快速入门' },
       { text: '小白入门', link: '/mirajay-cli-小白入门指南' },
+      { text: '变更日志', link: '/changelog' },
       { text: '踩坑复盘', link: '/mirajay-cli-开发踩坑与AI编程复盘' },
       { text: '发布说明', link: '/publishing' },
       {
@@ -61,6 +62,7 @@ export default defineConfig({
           { text: '文档中心', link: '/' },
           { text: '快速入门', link: '/00-快速入门' },
           { text: '小白入门指南', link: '/mirajay-cli-小白入门指南' },
+          { text: '版本变更与迭代', link: '/changelog' },
           { text: 'GitHub / npm / Pages 发布', link: '/publishing' },
         ],
       },

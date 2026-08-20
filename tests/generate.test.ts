@@ -84,6 +84,21 @@ describe('generateProject', () => {
       expect(sharedPkg.scripts?.lint).toBeUndefined()
       expect(sharedPkg.devDependencies?.eslint).toBeUndefined()
 
+      await access(join(targetDir, 'prettier.config.mjs'))
+      await access(join(targetDir, '.editorconfig'))
+      await access(join(targetDir, 'apps/web/eslint.config.js'))
+
+      const rootPkg = JSON.parse(await readFile(join(targetDir, 'package.json'), 'utf-8'))
+      expect(rootPkg.devDependencies.prettier).toBeDefined()
+      expect(rootPkg.devDependencies.eslint).toBeUndefined()
+      expect(rootPkg.scripts.lint).toBe('turbo run lint')
+      expect(rootPkg.scripts.format).toBe('prettier --write .')
+
+      expect(appPkg.devDependencies.eslint).toBeDefined()
+      expect(appPkg.devDependencies.prettier).toBeUndefined()
+      expect(appPkg.scripts.lint).toContain('eslint')
+      expect(appPkg.scripts.lint).not.toContain('prettier')
+
       const readme = await readFile(join(targetDir, 'apps/web/README.md'), 'utf-8')
       expect(readme).toContain('## 快速开始')
       expect(readme).toContain('pnpm dev')
@@ -162,9 +177,13 @@ describe('generateProject', () => {
 
       await access(join(targetDir, '.husky/pre-commit'))
       await access(join(targetDir, 'commitlint.config.cjs'))
+      await access(join(targetDir, 'prettier.config.mjs'))
+      await access(join(targetDir, 'apps/web/eslint.config.js'))
       const rootPkg = JSON.parse(await readFile(join(targetDir, 'package.json'), 'utf-8'))
       expect(rootPkg.scripts.prepare).toBe('husky')
       expect(rootPkg.devDependencies.husky).toBeDefined()
+      expect(rootPkg.devDependencies.prettier).toBeDefined()
+      expect(rootPkg.devDependencies.eslint).toBeUndefined()
 
       const appPkg = JSON.parse(
         await readFile(join(targetDir, 'apps/web/package.json'), 'utf-8'),
@@ -175,6 +194,8 @@ describe('generateProject', () => {
       expect(appPkg.dependencies['@mono-taro/shared']).toBe('workspace:*')
       expect(appPkg.scripts.prepare).toBeUndefined()
       expect(appPkg.devDependencies?.husky).toBeUndefined()
+      expect(appPkg.devDependencies.eslint).toBeDefined()
+      expect(appPkg.devDependencies.prettier).toBeUndefined()
 
       await access(join(targetDir, 'apps/web/tsconfig.json'))
     } finally {

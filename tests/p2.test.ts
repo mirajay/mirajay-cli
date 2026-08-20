@@ -199,8 +199,18 @@ describe('P2 template coverage', () => {
 
       expect(hostPkg.scripts.lint).toBeDefined()
       expect(hostPkg.devDependencies.eslint).toBeDefined()
+      expect(hostPkg.devDependencies.prettier).toBeUndefined()
       expect(remotePkg.scripts?.lint).toBeUndefined()
       expect(remotePkg.devDependencies?.eslint).toBeUndefined()
+
+      await access(join(targetDir, 'prettier.config.mjs'))
+      await access(join(targetDir, 'apps/host/eslint.config.js'))
+      const rootPkg = JSON.parse(await readFile(join(targetDir, 'package.json'), 'utf-8'))
+      expect(rootPkg.devDependencies.prettier).toBeDefined()
+      expect(rootPkg.devDependencies.eslint).toBeUndefined()
+      const lintStaged = await readFile(join(targetDir, 'lint-staged.config.mjs'), 'utf-8')
+      expect(lintStaged).toContain('apps/host/eslint.config.js')
+      expect(lintStaged).not.toContain('apps/web/eslint.config.js')
     } finally {
       await rm(targetDir, { recursive: true, force: true })
     }

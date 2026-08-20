@@ -14,15 +14,22 @@ const results = []
 
 for (const scenario of scenarios) {
   console.log(`\n=== Running ${scenario.id} ===`)
-  const result = await runScaffoldScenario(scenario, { keepDir: !result?.passed })
+  const result = await runScaffoldScenario(scenario, { keepDir: true })
   results.push(result)
   const status = result.passed ? 'PASS' : 'FAIL'
-  console.log(`${scenario.id}: ${status}`)
+  console.log(`${scenario.id}: ${status} (${result.projectDir})`)
   if (!result.passed) {
     for (const step of result.steps.filter((item) => !item.ok)) {
       console.log(`  ✗ ${step.step}`)
       console.log(step.output?.slice(-1200) ?? '')
     }
+  } else {
+    // 通过后清理临时目录，失败则保留便于排查
+    const { rm } = await import('node:fs/promises')
+    const root = result.projectDir.includes('/apps/')
+      ? result.projectDir.replace(/\/apps\/[^/]+$/, '')
+      : result.projectDir
+    await rm(root, { recursive: true, force: true }).catch(() => {})
   }
 }
 

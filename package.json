@@ -1,6 +1,6 @@
 {
   "name": "mirajay-cli",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "企业级前端脚手架 - 覆盖桌面 Web、移动端与微前端全场景",
   "type": "module",
   "bin": {
@@ -35,7 +35,7 @@
     "vue",
     "micro-frontend"
   ],
-  "author": "",
+  "author": "mirajay",
   "license": "MIT",
   "repository": {
     "type": "git",

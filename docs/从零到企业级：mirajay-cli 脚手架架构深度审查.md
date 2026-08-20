@@ -86,11 +86,11 @@ Turborepo + pnpm workspace + `packages/shared`。桌面/H5 勾选 Monorepo 时�
 1. 解析本地或远程模板目录；
 2. 渲染业务模板到目标目录（Monorepo 时为 `apps/web`）；
 3. 如需 Monorepo，再铺 `monorepo-base`；
-4. 若启用工程化，渲染 `engineering-base`，并用 **engineering-manifest** 合并 `package.json` 的 scripts / devDependencies；
-5. Monorepo 场景把 Git hooks 挂到仓库根，并把子包工程化脚本同步下去；
+4. 若启用工程化：工作区场景按 **shared（根）/ app（主应用）/ hooks（根）** 分流渲染 `engineering-base`，并用 **engineering-manifest** 按 scope 合并 `package.json`；扁平项目则全部落在根；
+5. 工作区仅向 `apps/*` 注入应用级 lint/test 依赖（`packages/*` 不注入）；Git hooks 挂仓库根；
 6. 最后渲染 `git-base`。
 
-这是典型的「组合优于复制」。
+这是典型的「组合优于复制」。Monorepo 与 Module Federation 的分层约定见 [changelog 1.1.0](./changelog.md)。
 
 ---
 

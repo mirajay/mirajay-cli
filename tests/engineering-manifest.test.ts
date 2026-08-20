@@ -24,4 +24,40 @@ describe('getEngineeringManifest lint script', () => {
     expect(manifest.scripts.format).toBe('prettier --write .')
     expect(manifest.scripts['format:check']).toBe('prettier --check .')
   })
+
+  it('splits shared and app scopes for monorepo placement', () => {
+    const engineering = createEngineeringFromPreset('standard')
+    const shared = getEngineeringManifest({
+      profile: 'react',
+      engineering,
+      scope: 'shared',
+    })
+    const app = getEngineeringManifest({
+      profile: 'react',
+      engineering,
+      includeGitHooks: false,
+      scope: 'app',
+    })
+    const hooks = getEngineeringManifest({
+      profile: 'react',
+      engineering,
+      includeGitHooks: true,
+      scope: 'hooks',
+    })
+
+    expect(shared.devDependencies.prettier).toBeDefined()
+    expect(shared.devDependencies.eslint).toBeUndefined()
+    expect(shared.scripts.lint).toBeUndefined()
+    expect(shared.scripts.format).toBe('prettier --write .')
+
+    expect(app.devDependencies.eslint).toBeDefined()
+    expect(app.devDependencies.prettier).toBeUndefined()
+    expect(app.scripts.lint).toContain('eslint .')
+    expect(app.scripts.lint).not.toContain('prettier')
+
+    expect(hooks.devDependencies.husky).toBeDefined()
+    expect(hooks.devDependencies.eslint).toBeUndefined()
+    expect(hooks.scripts.prepare).toBe('husky')
+    expect(hooks.scripts.lint).toBeUndefined()
+  })
 })

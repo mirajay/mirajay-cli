@@ -163,8 +163,15 @@
 
 - **现象**：`pnpm lint` 在 shared 上报「有 script/deps、无 eslint config」；web 侧 Prettier/Stylelint/Markdownlint 连环炸。  
 - **根因**：`mergeEngineeringToWorkspacePackages` 对所有 workspace 包一视同仁。  
-- **处理**：`shouldInjectWorkspaceEngineering()`，原则上只注入 `apps/*`；并修规则与模板格式。  
+- **处理**：`shouldInjectWorkspaceEngineering()`，原则上只注入 `apps/*`；并修规则与模板格式。后续进一步统一为「根共享 Prettier 等 + `apps/*` 放 ESLint/Stylelint/Vitest」。  
 - **防再发**：workspace 注入策略要有专门单测（本仓库 `monorepo-engineering` 相关测试即为此服务）。
+
+### P33 · 全链路矩阵暴露的微前端模板缺陷（1.1.0）
+
+- **现象**：`micro-wujie-vue` build 因 `fetch` 类型失败；MF Vue / mixed remote 的 `index.html` 仍指向 `main.tsx`；MF 根缺 `test`；混栈 Vue 宿主 ESLint 解析不了 `<script setup lang="ts">`。  
+- **根因**：模板从 React 拷贝未改干净；工程化分层后根不再「顺带」带上 app 的 eslint，暴露宿主配置缺口；MF 根脚本未与 turbo `test` 对齐。  
+- **处理**：修正 wujie `fetch` 类型；Vue remote 入口改为 `main.ts` + `#app`；MF 根补 `test`；Vue ESLint flat config 为 `*.vue` 挂 TypeScript parser。  
+- **防再发**：`SCAFFOLD_MATRIX=1` 覆盖 MF 同栈/混栈的 install/build/lint/test。
 
 ### P21 · shadcn：没有可用 `tsconfig` / paths 就去装组件
 
@@ -296,6 +303,7 @@
 | P24 | 移动 Monorepo script/tsconfig | 复杂 |
 | P25 | Flutter SDK 硬阻断 | 环境设计 |
 | P30–P32 | 用法、环境、文档 AI 幻觉 | 环境 / 文档 |
+| P33 | MF/wujie 矩阵缺陷（入口/test/parser） | 模板 / 工程化 |
 | 安全 | 白名单与远程源校验 | 预防 |
 
 ---
