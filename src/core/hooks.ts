@@ -1,4 +1,4 @@
-import { createHooks } from 'hookable'
+import { createHooks, type Hookable } from 'hookable'
 import type { ProjectAnswers } from '../types.js'
 
 export interface CliHooks {
@@ -29,7 +29,7 @@ export const hooks = createHooks<CliHooks>()
 
 export function registerPlugin(plugin: {
   name: string
-  setup?: (hooks: typeof hooks) => void | Promise<void>
+  setup?: (hooks: Hookable<CliHooks>) => void | Promise<void>
 }) {
   return plugin
 }

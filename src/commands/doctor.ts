@@ -1,7 +1,7 @@
 import { defineCommand } from 'citty'
 import { execa } from 'execa'
 import pc from 'picocolors'
-import { banner, step, success, warn, error, info } from '../core/logger.js'
+import { banner, step, success, error, info } from '../core/logger.js'
 import { resolveFlutterSdk } from '../core/flutter-sdk.js'
 import semver from 'semver'
 

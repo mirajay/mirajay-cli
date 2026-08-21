@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto'
 import { homedir } from 'node:os'
 import { join, resolve, isAbsolute } from 'node:path'
 import { downloadTemplate } from 'giget'
-import { step, warn } from './logger.js'
+import { step } from './logger.js'
 import { getTemplatesDir } from './templates-dir.js'
 
 const REMOTE_SOURCE_PATTERN =

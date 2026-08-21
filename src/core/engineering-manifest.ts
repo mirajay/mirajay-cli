@@ -1,6 +1,6 @@
 import type { EngineeringOptions, EngineeringPreset } from '../types.js'
 import type { EngineeringProfile } from './engineering-profile.js'
-import { profileUsesReact, profileUsesVue } from './engineering-profile.js'
+import { profileUsesVue } from './engineering-profile.js'
 
 type PresetFlags = Omit<EngineeringOptions, 'preset'>
 

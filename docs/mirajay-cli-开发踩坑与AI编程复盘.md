@@ -173,6 +173,23 @@
 - **处理**：修正 wujie `fetch` 类型；Vue remote 入口改为 `main.ts` + `#app`；MF 根补 `test`；Vue ESLint flat config 为 `*.vue` 挂 TypeScript parser。  
 - **防再发**：`SCAFFOLD_MATRIX=1` 覆盖 MF 同栈/混栈的 install/build/lint/test。
 
+### P34 · CI `typecheck` 批量失败：unused / 断言 / consola / hookable
+
+- **现象**：Release / CI 跑 `pnpm typecheck`（`tsc --noEmit`，且 `noUnusedLocals`）直接挂，典型报错：
+  - `TS6133`：`warn` / `info` / `profileUsesReact` 等 import 了未使用  
+  - `TS2352`：`update-deps` 里把 `args.package`（citty 推断为 `string`）强转成 `string[]`  
+  - `TS2502`：`hooks.ts` 里 `setup?: (hooks: typeof hooks) => ...`，`hooks` 在自己的类型注解中循环引用  
+  - `TS2353`：`createConsola({ fancy: true })` —— 本仓库 `moduleResolution: "bundler"` 解析到 consola 的 **browser** 类型，`Partial<ConsolaOptions>` 没有 `fancy`  
+  - `TS2554`：`pc.bold(pc.blue('→'), message)` —— picocolors 的 `bold` 只接受 1 个参数  
+- **根因**：脚手架本体源码在文档/模板大改期间积了未使用导入与过时类型写法；依赖类型与打包条件导出（consola `node` vs `default`/`browser`）不一致；`typeof hooks` 自引用在严格检查下不过。  
+- **处理**：
+  - 删掉未使用导入（`doctor` / `test` / `remote-templates` / `engineering-manifest`）  
+  - `args.package` 按 `string | string[]` 归一化后再 `flatMap`  
+  - `registerPlugin` 参数改为 `Hookable<CliHooks>`，打断循环  
+  - 去掉 `fancy`（Node 下 consola 默认已够用）；`step` 改为模板字符串拼接  
+- **附带坑**：本机版本若是 Node 18，`vitest` 可能报 `node:events` 无 `addAbortListener`（需 Node ≥ 24.18，与 `engines` / CI 一致）；与本次 TS 修复无关，但会误判「测试也挂了」。  
+- **防再发**：合并前本地用 **Node 24** 跑 `pnpm typecheck && pnpm test && pnpm build`（与 `ci.yml` / `release.yml` 门禁对齐）；改 logger / citty args / hookable 时注意类型条件导出与循环引用。
+
 ### P21 · shadcn：没有可用 `tsconfig` / paths 就去装组件
 
 - **现象**：React + 工程化场景下 shadcn CLI 失败，页面缺组件样式结构。  
@@ -304,6 +321,7 @@
 | P25 | Flutter SDK 硬阻断 | 环境设计 |
 | P30–P32 | 用法、环境、文档 AI 幻觉 | 环境 / 文档 |
 | P33 | MF/wujie 矩阵缺陷（入口/test/parser） | 模板 / 工程化 |
+| P34 | CI typecheck（unused / citty 数组 / consola fancy / hookable 自引用） | 构建 / 类型 |
 | 安全 | 白名单与远程源校验 | 预防 |
 
 ---
@@ -335,6 +353,9 @@
 | 答案白名单 | `src/types.ts`、`src/commands/init.ts` |
 | Flutter 降级策略 | `src/commands/init.ts`、`src/core/flutter-sdk.ts` |
 | 矩阵回归 | `tests/helpers/scaffold-matrix.ts`、`scripts/run-scaffold-matrix.mjs` |
+| Logger / Consola | `src/core/logger.ts` |
+| Hookable 插件注册 | `src/core/hooks.ts` |
+| update-deps 包名参数 | `src/commands/update-deps.ts` |
 | 架构边界讨论 | [从零到企业级：架构深度审查](./从零到企业级：mirajay-cli%20脚手架架构深度审查.md) |
 | 工程化说明 | [06-工程化体系](./06-工程化体系.md) |
 
