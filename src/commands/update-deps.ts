@@ -47,8 +47,11 @@ export default defineCommand({
     banner()
 
     const scaffoldRoot = (args.cwd as string | undefined) || resolveScaffoldRoot()
-    const onlyPackages = args.package?.length
-      ? (args.package as string[]).flatMap((item) => item.split(','))
+    const packageArg = args.package as string | string[] | undefined
+    const onlyPackages = packageArg
+      ? (Array.isArray(packageArg) ? packageArg : [packageArg]).flatMap((item) =>
+          item.split(','),
+        )
       : undefined
 
     step(`扫描模板依赖: ${scaffoldRoot}`)

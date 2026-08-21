@@ -1,9 +1,7 @@
 import { createConsola } from 'consola'
 import pc from 'picocolors'
 
-export const logger = createConsola({
-  fancy: true,
-})
+export const logger = createConsola()
 
 export function success(message: string) {
   logger.success(pc.green(message))
@@ -22,7 +20,7 @@ export function error(message: string) {
 }
 
 export function step(message: string) {
-  logger.log(pc.bold(pc.blue('→'), message))
+  logger.log(`${pc.bold(pc.blue('→'))} ${message}`)
 }
 
 export function banner() {

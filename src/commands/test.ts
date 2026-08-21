@@ -1,5 +1,5 @@
 import { defineCommand } from 'citty'
-import { banner, step, info } from '../core/logger.js'
+import { banner, step } from '../core/logger.js'
 import { runCommand } from '../core/utils.js'
 
 export default defineCommand({
